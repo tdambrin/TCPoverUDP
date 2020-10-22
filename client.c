@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include "utilClient.h"
 
 #ifndef RCVSIZE
         #define RCVSIZE 1024

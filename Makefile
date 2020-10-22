@@ -7,7 +7,7 @@ utilClient.o: utilClient.c utilClient.h
 	gcc -c utilClient.c -o utilClient.o
 
 client: client.o utilClient.o
-	gcc client.o utilClient.o -o client
+	gcc client.o utilClient.o -o client -lm
 
 client.o: client.c
 	gcc -c client.c -o client.o
