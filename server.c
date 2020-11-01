@@ -19,6 +19,8 @@
 #endif
 
 int main (int argc, char *argv[]) {
+
+  // ------------------------------------- CONFIG ----------------------------------------
   int port1= 2567;
   int port2 = 2568;
   if (argc > 1){
@@ -81,9 +83,10 @@ int main (int argc, char *argv[]) {
 
 //  printf("Listen done\n");
 
+// -------------------------------- ACCEPT CONNEXION AND HANDLE IF CHILD PROCESSES -------------------------------------
 int fragSize = SEQUENCELEN + 1024;
-int com_sockets[100];
-int sync;
+int com_sockets[100]; // used to store clients' sockets descriptors
+int sync; 
 char* msgType = (char*) malloc(4); // on donnera pour l'instant les requetes sous la forme ABC_ ou ABC = {GET, ...}
 while (1) {
 	int newPort = port1 + 1;
@@ -91,10 +94,10 @@ while (1) {
     select(sock_udp + 1, &set, NULL, NULL, 0);
     printf("SELECT DONE\n");*/
   	sync = synchro(sock_co_udp, client, newPort);
-	if (sync > 1){ //son process who created a new socket
+	if (sync > 1){ //son process who created a new socket, meaning sync = descriptor of newly created socket
 		close(sock_co_udp);
 		int msgSock = sync;
-	  	com_sockets[newPort -1 - port1] = msgSock;
+	  	com_sockets[newPort -1 - port1] = msgSock; // add to socket table
 		int msgSize;
 	  	msgSize = recvfrom(msgSock, buffer, RCVSIZE, MSG_WAITALL, (struct sockaddr*)&client, &clientLen);
 	  	buffer[msgSize]='\0';
@@ -105,6 +108,10 @@ while (1) {
 		printf("BUFFER : %s\n",buffer);
 		strncpy(msgType, buffer, 4);
 		printf("MSGTYPE :%s\n", msgType);
+
+		// case to handle client requests
+
+		// GET FILE
 		if (strcmp(msgType, "GET_") == 0){
 			printf("ABOUT TO READ & SEND\n");
 			readAndSendFile(msgSock, client, buffer + 4, fragSize - SEQUENCELEN, SEQUENCELEN, 10); //current ack must be shared between son processes
@@ -113,11 +120,11 @@ while (1) {
 		close(msgSock);
 		break; //connexion closed
 
-	}else if (sync == 1){
+	}else if (sync == 1){ // parent process -> keep accepting connexions
 		printf("ONE CLIENT SUCCESSFULLY SYNCHRO\n");
 	  	newPort ++;
 
-	}else{
+	}else{ // synchro failed
 	  	printf("COULD NOT SYNC ONE CLIENT\n");
 	}
 

@@ -14,6 +14,7 @@
 
 int main (int argc, char *argv[]) {
 
+// --------------------- CONFIG ----------------------
   struct sockaddr_in adresse, adresse_com;
   struct in_addr serv_addr;
   serv_addr.s_addr = inet_addr("127.0.0.1");
@@ -58,6 +59,8 @@ int main (int argc, char *argv[]) {
 
   int newPort;
   int newSock;
+
+  // ------------------------- CONNECT ------------------------------
   if ((newPort = synchro(server_desc, adresse)) > 0){
 	  if ((newSock = socket(AF_INET, SOCK_DGRAM, 0)) < 0){
 		  perror("Could not create new com socket\n");
@@ -69,6 +72,7 @@ int main (int argc, char *argv[]) {
 	  printf("First message sent %s %d\n", inet_ntoa(adresse_com.sin_addr), ntohs(adresse_com.sin_port));
   }
 
+  // ------------------------ ASF FOR FILE (BY INPUT) -------------------
   char fichier[RCVSIZE];
   fgets(fichier, RCVSIZE, stdin);
   fichier[strlen(fichier) - 1] = '\0'; //because of \n char
@@ -77,12 +81,6 @@ int main (int argc, char *argv[]) {
   char *contenu = askForFile(newSock, adresse_com, fichier);
 
 
-
-/*
-    fgets(msg, RCVSIZE, stdin);
-    ssize_t sss= sendto(server_desc,msg,strlen(msg), MSG_CONFIRM, (struct sockaddr*)&adresse, sizeof(adresse));
-    printf("the value of sent is:%li\n", sss);
-*/
 close(server_desc);
 return 0;
 }

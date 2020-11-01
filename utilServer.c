@@ -8,6 +8,8 @@
 #include <sys/select.h>
 #include <sys/time.h>
 #include <math.h>
+#include <time.h>
+
 #include "utilServer.h"
 
 #ifndef RCVSIZE
@@ -77,7 +79,6 @@ int synchro(int sock, struct sockaddr_in client, int port){
 
 
 void intToSeqN(int x, char *res){
-        //char *res = (char*) malloc (SEQUENCELEN); // attention normalement malloc terminé à la fin de la fonction
         strncpy(res, "00000000000000", SEQUENCELEN);
         res[SEQUENCELEN] = '\0'; 
         for (int i=SEQUENCELEN - 1; i >= 0; i--){
@@ -86,7 +87,6 @@ void intToSeqN(int x, char *res){
                     break;
                 }
         } 
-        //return res;
 }
 
 int seqNToInt(char *seqNumber){
@@ -95,12 +95,19 @@ int seqNToInt(char *seqNumber){
 
 //current message format : XXXX<data> with XXXX sequence number
 int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dataSize, int seqNsize, int initAck){
+    // ---------------------- INIT ---------------------
     char* content;
-    int window = 1;
+    int window = 5;
     char* msg = (char*) malloc(dataSize + seqNsize);
     char* response = (char*) malloc(seqNsize+4);
     char strAck[] = "ACK_";
-    printf("FILENAME : begin:%s:end\n", filename);
+    /*fd_set set;
+    FD_ZERO(&set);
+    FD_SET(sock, &set);*/
+    
+    //printf("FILENAME : begin:%s:end\n", filename);
+
+    // --------------------- READ FILE ------------------
     FILE* fich = fopen(filename, "r");
     socklen_t clientLen = sizeof(client);
     int recvdSize;
@@ -117,31 +124,31 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         perror("Memoire epuisee\n");
         return -1;
     }
+    fread(content, 1, filelen, fich);
+    fclose(fich);
+
+    // -------------------- SEND FILE SIZE TO CLIENT FOR CLIENT INIT ----------------------
     int sizeToSend = htonl(filelen);
     sendto(sock, &sizeToSend, sizeof(htonl(filelen)), MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
     printf("FILE SIZE SENT TO CLIENT\n");
-    /*
-    for (int i=0; i < filelen/dataSize; i++){
-        fgets(content[i], dataSize, fich);
-        printf("Content %i read\n",i);
-    }*/
-    fread(content, 1, filelen, fich);
-    int sent = -1;
+
     //printf("CONTENT ALL READ AND STORED : %s\n", content);
 
-//------------------------------------
-    //SLIDING WINDOW
-    int transmitted = 0;
-    int lastSent = initAck - 1;
-    int lastTransmittedSeqN = initAck - 1;
-    int maybeAcked;
+    //--------------------------- SEND FILE CONTENT TO CLIENT -----------------
+    int sent = -1;
+    int transmitted = 0; //nb of bytes sent and acked
+    int lastSent = initAck - 1; //seqN of last sent segment
+    int lastTransmittedSeqN = initAck - 1; //seqN of last acked segment
+    int maybeAcked; //used to store seqN answered by client
     int flightSize = 0;
     int dupAck = 0;
     char* currentSeqN = (char *) malloc (SEQUENCELEN);
 
-    char* proof = (char*) malloc(filelen);
-    int nextFree = 0;
+    clock_t start = clock();
 
+    //WARNING : if window greater than total nb of segments 
+
+    //Send window first segments
     for (int i = 0; i < window; i++){
         strAck[4] = '\0';
         intToSeqN(initAck + i, currentSeqN);
@@ -152,53 +159,44 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
         //WARNING FOR LATER : handle last message that can be shorter
         sent = sendto(sock, (char*) msg, dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
-
-                memcpy(proof+nextFree, msg + SEQUENCELEN, sent - SEQUENCELEN);
-                nextFree += sent - SEQUENCELEN;
-
-
         lastSent += 1;
         flightSize ++;
-        printf("SENT %i bytes | seqN = %i \n", sent, initAck+i);
+        //printf("SENT %i bytes | seqN = %i \n", sent, initAck+i);
     }
     while (transmitted < filelen){
+
+            //receive answer from client and update var
             recvdSize = recvfrom(sock, (char*) response, RCVSIZE, MSG_WAITALL, (struct sockaddr*)&client, &clientLen);
             response[recvdSize] = '\0';
             maybeAcked = seqNToInt(response + 4);
             response[4] = '\0';
+
             if (strcmp(response, "ACK_") == 0){
-                flightSize --;
-                if (maybeAcked == lastTransmittedSeqN + 1){
+                flightSize --; //because a segment has been acked
+                if (maybeAcked == lastTransmittedSeqN + 1){ //currently acked segment is the very next one of the last acked segment
                     lastTransmittedSeqN++;
-                    transmitted += dataSize;
-                    int i=1;
+                    transmitted += dataSize; // WARNING : if dataSize=cste
+
+                    //transmit next segments (from lastSent not lastTransmitted)
                     while (flightSize < window){
-                        /*strAck[4] = '\0';
-                        strncat(strAck, intToSeqN(initAck + lastSent + 1), seqNsize);*/
                         msg[0] = '\0';
                         intToSeqN(lastSent + 1, currentSeqN);
                         strncat(msg, currentSeqN, seqNsize);
-                        memcpy(msg + seqNsize, content + (lastSent - initAck + 1)*dataSize, dataSize);
+                        memcpy(msg + seqNsize, content + (lastSent - initAck + 1)*dataSize, dataSize); //WARNING : if dataSize=cste
                         //WARNING FOR LATER : handle last message that can be shorter
                         sent = sendto(sock, (char*) msg, dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                         if (sent > -1){
                             flightSize ++;
                             lastSent += 1;
-                            i++;
-                            printf("SENT %i bytes | seqN = %i \n", sent, lastSent - 1);
-
-                                    memcpy(proof+nextFree, msg + SEQUENCELEN, sent - SEQUENCELEN);
-                                    nextFree += sent - SEQUENCELEN;
+                            //printf("SENT %i bytes | seqN = %i \n", sent, lastSent - 1);
                         }
                     }
-                }else{
+                }else{ //something went wrong with the transmission : the currently acked is not consecutive 
                     printf("Received a duplicated ACK\n");
-                    dupAck ++;
-                    if (dupAck >= 3){
-                        int i = 1;
+                    dupAck ++; //WARNING : not necessarly a dup ACK ?
+                    if (dupAck >= 3){ //consider a lost segment
+                        int i = 1; // used because we send from lastTransmitted but cant update lastTransmitted after just sending (got to receive the ack too)
                         while (flightSize < window){
-                            /*strAck[4] = '\0';
-                            strncat(strAck, intToSeqN(lastTransmittedSeqN + i), seqNsize);*/
                             msg[0] = '\0';
                             intToSeqN(lastTransmittedSeqN + i, currentSeqN);
                             strncat(msg, currentSeqN, seqNsize);
@@ -212,11 +210,10 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                                 if (diff > 0){
                                     lastSent += diff;
                                 }
-                                printf("SENT %i bytes | seqN = %i \n", sent, lastTransmittedSeqN + i - 1);
+                                //printf("SENT %i bytes | seqN = %i \n", sent, lastTransmittedSeqN + i - 1);
                             }
                         }
-                    }else{
-                        //keep going
+                    }else{ // not yet a lost segment -> keep sending
                         while (flightSize < window){
                             msg[0] = '\0';
                             intToSeqN(lastSent + 1, currentSeqN);
@@ -227,52 +224,38 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             if (sent > -1){
                                 flightSize ++;
                                 lastSent += 1;
-                                printf("SENT %i bytes | seqN = %i \n", sent, lastSent);
+                                //printf("SENT %i bytes | seqN = %i \n", sent, lastSent);
                             }
                         }
                     }
                 }
             }
     }
-//------------------------------------
-    /*for (int i=0; i <= filelen/dataSize; i++){
-        strAck[4] = '\0';
-        strncat(strAck, intToSeqN(initAck+i), seqNsize);
-        msg[0] = '\0';
-        strncat(msg, intToSeqN(initAck + i), seqNsize);
-        memcpy(msg + seqNsize, content + i*dataSize, dataSize);
-        //WARNING FOR LATER : handle last message that can be shorter
-        sent = sendto(sock, (char*) msg, dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
-        printf("SENT %i bytes | seqN = %i \n", sent, initAck+i);
-        //WARNING : add timeout (select)
-        recvdSize = recvfrom(sock, (char*) response, RCVSIZE, MSG_WAITALL, (struct sockaddr*)&client, &clientLen);
-        response[recvdSize] = '\0';
-        //printf("RECEIVED ACK : %s\n", response);
-        //printf("STRACK TO HAVE : %s\n", strAck);
-        while (strcmp(response, strAck) != 0){
-            printf("PACKET DIDNT ACKED\n");
-            sendto(sock, (char*) msg, sizeof(msg), MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
-            recvdSize = recvfrom(sock, (char*) response, RCVSIZE, MSG_WAITALL, (struct sockaddr*)&client, &clientLen);
-            response[recvdSize] = '\0';
-        }
-    }*/
 
-   char endMsg[] = "END_";
-    //endMsg + 4 = (char*) malloc(strlen(filename));
+    //All bytes have been transmitted -> send END MSG
+
+    char endMsg[] = "END_";
     strncat(endMsg, filename, strlen(filename));
-    printf("ENDMSG AT FIRST : %s\n", endMsg);
-    printf("BEFORE SENDING: %s\n", endMsg);
     sendto(sock, (char*) endMsg, strlen(endMsg), MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
-    printf("SENT END MSG : %s\n", endMsg);
     printf("FILE CONTENT FULLY TRANSMITTED\n");
-    printf("CONTENT == PROOF : %i\n", memcmp(content, proof, filelen));
-    printf("END OF PROOF : %s\n", proof + (filelen - 20));
-    
-    fclose(fich);
-    free(content);
+
+    //free(content);
+
+    clock_t end = clock();
+    float seconds = (float)(end - start) / CLOCKS_PER_SEC;
+    printf("program ran in %fs with window = %i\n", seconds, window);
+
+    //save time for comparison-----------------------------
+    FILE* times = fopen("times.txt", "a");
+    if (times){
+        fprintf(times, "%f\n", seconds);
+        fclose(times);
+    }
+
     return 1;
 }
 
+//not used yet
 char **splitData(char* src, int fragSize){
     char** res = (char**) malloc(sizeof(src));
     for( int i=0; i < strlen(src)/fragSize + 1; i++){

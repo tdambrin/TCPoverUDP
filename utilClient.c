@@ -67,16 +67,18 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
         printf("BEFORE INI STRING\n");
         char ackMsg[] = "ACK_";
         char stopMsg[] = "END_";
-        char getMsg[] = "GET_";
         printf("AFTER INIT STRING\n");
         int fileSize;
+        float rtt;
 
-        //init res size with size announced by server 
-        //getMsg + 4 = (char*) malloc(strlen(filename));
+        // ----------------------- SEND GET REQUEST TO SERVER --------------------
+        char getMsg[] = "GET_";
         strncat(getMsg, filename, strlen(filename));
         printf("AFTER SETTING GET MSG\n");
         printf("GET MESSAGE : %s\n", getMsg);
         sendto(sock, getMsg, strlen(getMsg), MSG_CONFIRM, (struct sockaddr*)&server, serverLen);
+
+        // --------------------- RECEIVE FILE SIZE AND INIT RES ------------------
 	recvfrom(sock, &fileSize, RCVSIZE, MSG_WAITALL, (struct sockaddr*) &server, &serverLen);
         fileSize = ntohl(fileSize);
         res = (char*) malloc(fileSize);
@@ -91,6 +93,8 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
         recvdSize = recvfrom(sock, buffer, 1028 , MSG_WAITALL, (struct sockaddr*) &server, &serverLen);
         //buffer[recvdSize] = '\0';
         //printf("RECEIVED FIRST CONTENT FRAG : %s\n", buffer);
+
+        // ------------------------- RECEIVE FILE CONTENT -------------------------
         int nextFree = 0;
         int lastAcked = 0;
         int seqNReceived;
@@ -107,20 +111,22 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
                 //strncat(res, buffer+SEQUENCELEN, recvdSize -  SEQUENCELEN);
                 //res[i*(recvdSize - SEQUENCELEN)] = '\0'; //not exactly but check for strcat
                 //printf("UPDATED RES\n");
-                printf("Received %i bytes\n", recvdSize);
+                //printf("Received %i bytes\n", recvdSize);
                 //printf("FIRST CHAR : %c\n",buffer[4]);
 
-                if (recvdSize < 100){
+                /*if (recvdSize < 100){
                         printf("END MSG RECEIVED : %s\nEND MSG LOCAL : %s\n", buffer, stopMsg);
-                }
+                }*/
 
                 //buffer[SEQUENCELEN] = '\0';
                 receivedSeqNStr[0] = '\0';
                 strncat(receivedSeqNStr, buffer, SEQUENCELEN);
                 seqNReceived = seqNToInt(receivedSeqNStr);
                 ackMsg[4] = '\0';
+
+                // First passage to set control vars because only server has the init seqN 
                 if (i == 0){
-                        strncat(ackMsg, buffer, SEQUENCELEN);
+                        strncat(ackMsg, buffer, SEQUENCELEN); // add seqN received to ack msg to be sent
                         sent = sendto(sock, ackMsg, strlen(ackMsg), MSG_CONFIRM, (struct sockaddr*)&server, serverLen);
                         while (sent < 0){
                                 sent = sendto(sock, ackMsg, strlen(ackMsg), MSG_CONFIRM, (struct sockaddr*)&server, serverLen);
@@ -128,11 +134,14 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
                         printf("First | ANSWER : %s\n", ackMsg);
                         lastAcked = seqNReceived;
                         // WARNING !!!!! check if server send same msg 
-                        memcpy(res + nextFree, buffer + SEQUENCELEN, recvdSize - SEQUENCELEN);
+                        memcpy(res + nextFree, buffer + SEQUENCELEN, recvdSize - SEQUENCELEN); // write received content to res
+                        // update control vars
                         receivedBytes += recvdSize - SEQUENCELEN;
                         printf("Copied %i bytes | ", recvdSize - SEQUENCELEN);
                         printf(" at %i position\n", nextFree);
                         nextFree += (recvdSize - SEQUENCELEN);
+
+                // Received a consecutive segment
                 }else if (seqNReceived == lastAcked + 1){
                         strncat(ackMsg, buffer, SEQUENCELEN);
                         sent = sendto(sock, ackMsg, strlen(ackMsg), MSG_CONFIRM, (struct sockaddr*)&server, serverLen);
@@ -151,6 +160,7 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
                         nextFree += (recvdSize - SEQUENCELEN);
                         receivedBytes += recvdSize - SEQUENCELEN;
 
+                // Received a non consecutive segment -> ack again the last acked
                 }else{
                         intToSeqN(lastAcked, currentSeqN);
                         strncat(ackMsg, currentSeqN, SEQUENCELEN);
@@ -168,7 +178,7 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
                 //printf("CONSTRUCTED ACK : %s\n", ackMsg);
                 sendto(sock, ackMsg, strlen(ackMsg), MSG_CONFIRM, (struct sockaddr*)&server, serverLen);*/
                 bzero(buffer, recvdSize);
-                recvdSize = recvfrom(sock, buffer, 1030, MSG_WAITALL, (struct sockaddr*) &server, &serverLen);
+                recvdSize = recvfrom(sock, buffer, 1030, MSG_WAITALL, (struct sockaddr*) &server, &serverLen); // receive next msg from server
                 //buffer[recvdSize] = '\0';
                 //printf("received MSG : %s\n", buffer);
                 i = 1;
@@ -180,6 +190,8 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
 
         //char fileRes[] = "client_";
         //strncat(fileRes, filename, strlen(filename));
+
+        // ------------------------- SAVE RESULT ----------------------
         char fileRes[] = "result.pdf";
         FILE* fichRes = fopen(fileRes, "w");
         if (fichRes){
