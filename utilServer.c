@@ -16,8 +16,12 @@
 	#define RCVSIZE 1024
 #endif
 
-#ifndef SEQUENCELEN
+#ifndef SEQUENCELEN //value used to estimate the rtt : +/- importance given to the RTT measured or to the RTT history
 	#define SEQUENCELEN 4
+#endif
+
+#ifndef ALPHA
+	#define ALPHA 0.6
 #endif
 
 /*Problems so far :
@@ -143,9 +147,10 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     int flightSize = 0;
     int dupAck = 0;
     char* currentSeqN = (char *) malloc (SEQUENCELEN);
+    float srtt = 4; //arbitrary value, this estimator should converge to the real value of rtt
 
     clock_t start = clock();
-
+    clock_t begin,stop;
     //WARNING : if window greater than total nb of segments 
 
     //Send window first segments
@@ -159,14 +164,23 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
         //WARNING FOR LATER : handle last message that can be shorter
         sent = sendto(sock, (char*) msg, dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
+        begin = clock();
         lastSent += 1;
         flightSize ++;
         //printf("SENT %i bytes | seqN = %i \n", sent, initAck+i);
     }
+
     while (transmitted < filelen){
 
             //receive answer from client and update var
             recvdSize = recvfrom(sock, (char*) response, RCVSIZE, MSG_WAITALL, (struct sockaddr*)&client, &clientLen);
+           
+                //Estimation du RTT sur lequel vont se baser les futures estimations du RTT
+	        stop = clock();
+	        float rtt = (float)(stop - begin) / CLOCKS_PER_SEC;
+	        srtt = ALPHA*srtt + (1-ALPHA)*rtt;
+	        printf("[RTT : %f | SRTT : %f]\n",rtt,srtt);
+
             response[recvdSize] = '\0';
             maybeAcked = seqNToInt(response + 4);
             response[4] = '\0';
@@ -185,6 +199,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         memcpy(msg + seqNsize, content + (lastSent - initAck + 1)*dataSize, dataSize); //WARNING : if dataSize=cste
                         //WARNING FOR LATER : handle last message that can be shorter
                         sent = sendto(sock, (char*) msg, dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
+                        begin = clock();
                         if (sent > -1){
                             flightSize ++;
                             lastSent += 1;
@@ -203,6 +218,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             memcpy(msg + seqNsize, content + (lastTransmittedSeqN - initAck + i)*dataSize, dataSize);
                             //WARNING FOR LATER : handle last message that can be shorter
                             sent = sendto(sock, (char*) msg, dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
+                            begin = clock();
+
                             if (sent > -1){
                                 flightSize ++;
                                 i++;
@@ -221,6 +238,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             memcpy(msg + seqNsize, content + (lastSent - initAck + 1)*dataSize, dataSize);
                             //WARNING FOR LATER : handle last message that can be shorter
                             sent = sendto(sock, (char*) msg, dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
+                            begin = clock();
                             if (sent > -1){
                                 flightSize ++;
                                 lastSent += 1;
