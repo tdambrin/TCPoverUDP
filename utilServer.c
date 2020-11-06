@@ -196,7 +196,14 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         msg[0] = '\0';
                         intToSeqN(lastSent + 1, currentSeqN);
                         strncat(msg, currentSeqN, seqNsize);
-                        memcpy(msg + seqNsize, content + (lastSent - initAck + 1)*dataSize, dataSize); //WARNING : if dataSize=cste
+
+                            //if the message is shorter than dataSize
+                        if(filelen - lastSent*dataSize < dataSize){
+                            memcpy(msg + seqNsize, content + (filelen - lastSent*dataSize), dataSize); //WARNING : if dataSize=cste
+                        }else{
+                            memcpy(msg + seqNsize, content + (lastSent - initAck + 1)*dataSize, dataSize); //WARNING : if dataSize=cste
+                        }
+
                         //WARNING FOR LATER : handle last message that can be shorter
                         sent = sendto(sock, (char*) msg, dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                         begin = clock();
@@ -215,7 +222,14 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             msg[0] = '\0';
                             intToSeqN(lastTransmittedSeqN + i, currentSeqN);
                             strncat(msg, currentSeqN, seqNsize);
-                            memcpy(msg + seqNsize, content + (lastTransmittedSeqN - initAck + i)*dataSize, dataSize);
+
+                                //if the message is shorter than dataSize
+                            if(filelen - lastSent*dataSize < dataSize){
+                                memcpy(msg + seqNsize, content + (filelen - lastSent*dataSize), dataSize); //WARNING : if dataSize=cste
+                            }else{
+                                memcpy(msg + seqNsize, content + (lastSent - initAck + 1)*dataSize, dataSize); //WARNING : if dataSize=cste
+                            }
+
                             //WARNING FOR LATER : handle last message that can be shorter
                             sent = sendto(sock, (char*) msg, dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                             begin = clock();
@@ -235,7 +249,14 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             msg[0] = '\0';
                             intToSeqN(lastSent + 1, currentSeqN);
                             strncat(msg, currentSeqN, seqNsize);
-                            memcpy(msg + seqNsize, content + (lastSent - initAck + 1)*dataSize, dataSize);
+
+                                //if the message is shorter than 1024
+                            if(filelen - lastSent*dataSize < dataSize){
+                                memcpy(msg + seqNsize, content + (filelen - lastSent*dataSize), dataSize); //WARNING : if dataSize=cste
+                            }else{
+                                memcpy(msg + seqNsize, content + (lastSent - initAck + 1)*dataSize, dataSize); //WARNING : if dataSize=cste
+                            }
+
                             //WARNING FOR LATER : handle last message that can be shorter
                             sent = sendto(sock, (char*) msg, dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                             begin = clock();
