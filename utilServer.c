@@ -210,7 +210,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                     window += 1;
                     //congestion avoidance
                 }else{
-                    window += floor(1/window);
+                    window += (1/window);
                 }
 
                 if (maybeAcked == lastTransmittedSeqN + 1){ //currently acked segment is the very next one of the last acked segment
@@ -218,7 +218,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                     transmitted += dataSize; // WARNING : if dataSize=cste
 
                     //transmit next segments (from lastSent not lastTransmitted)
-                    while (flightSize < window){
+                    while (flightSize < floor(window) ){
                         msg[0] = '\0';
                         intToSeqN(lastSent + 1, currentSeqN);
                         strncat(msg, currentSeqN, seqNsize);
@@ -248,7 +248,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         window = 1;
                         sstresh = flightSize/2;
 
-                        while (flightSize < window){
+                        while (flightSize < floor(window) ){
                             msg[0] = '\0';
                             intToSeqN(lastTransmittedSeqN + i, currentSeqN);
                             strncat(msg, currentSeqN, seqNsize);
@@ -276,7 +276,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             }
                         }
                     }else{ // not yet a lost segment -> keep sending
-                        while (flightSize < window){
+                        while (flightSize < floor(window) ){
                             msg[0] = '\0';
                             intToSeqN(lastSent + 1, currentSeqN);
                             strncat(msg, currentSeqN, seqNsize);
@@ -302,8 +302,10 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             }
         //TIMEOUT : segment lost
         }else{
+            //WARNING /!\ : NOT TESTED
             sstresh = flightSize/2;
             sent = sendto(sock, (char*) msg,  filelen - (lastSent - initAck)*dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
+
             window = 1;
         }
     }
