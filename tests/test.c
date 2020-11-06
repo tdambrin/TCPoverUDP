@@ -48,11 +48,12 @@ int main(int arc, char *argv){
 		printf("CANT OPEN\n");
 	}
 	fclose(fich);
-*/
 	//printf("STRCMP : %i\n", strcmp("END_rfc793.pdf", 162));
 	char *string = (char*) malloc(15);
 	memcpy(string, "prout", 5);
 	memcpy(string + 5, "prout",5);
 	printf("string : %s\n",string);
+*/
+	printf("INT : %i\n", atoi("0053"));
 	return 1;
 }
