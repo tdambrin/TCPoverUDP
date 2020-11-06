@@ -105,7 +105,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
     // ---------------------- INIT ---------------------
     char* content;
-    int window = 1; //with slow start the window starts to 1...
+    float window = 1; //with slow start the window starts to 1...
     float sstresh = 100; //...and the tresholt takes a first arbitrary great value at the beginning
     char* msg = (char*) malloc(dataSize + seqNsize);
     char* response = (char*) malloc(seqNsize+4);
@@ -182,12 +182,13 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
     while (transmitted < filelen){
             
-            FD_ZERO(&set);
-            FD_SET(sock, &set);
-            select(sock+1,&set,NULL,NULL,&timeout);
+        FD_ZERO(&set);
+        FD_SET(sock, &set);
+        select(sock+1,&set,NULL,NULL,&timeout);
 
-            if( FD_ISSET(sock,&set) )
-
+        if( FD_ISSET(sock,&set) ){
+            
+            printf("#WINDOW : %f\n",window);
             //receive answer from client and update var
             recvdSize = recvfrom(sock, (char*) response, RCVSIZE, MSG_WAITALL, (struct sockaddr*)&client, &clientLen);
            
@@ -209,7 +210,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                     window += 1;
                     //congestion avoidance
                 }else{
-                    window += 1/window;
+                    window += floor(1/window);
                 }
 
                 if (maybeAcked == lastTransmittedSeqN + 1){ //currently acked segment is the very next one of the last acked segment
@@ -280,7 +281,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             intToSeqN(lastSent + 1, currentSeqN);
                             strncat(msg, currentSeqN, seqNsize);
 
-                            //if the message is shorter than 1024
+                            //if the message is shorter than RCVSIZE
                             if(filelen - (lastSent - initAck)*dataSize < dataSize){
                                 memcpy(msg + seqNsize, content + (lastSent - initAck + 1)*dataSize, filelen - (lastSent - initAck)*dataSize); //WARNING : if dataSize=cste
                                 sent = sendto(sock, (char*) msg,  filelen - (lastSent - initAck)*dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
@@ -289,7 +290,6 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                                 sent = sendto(sock, (char*) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                             }
 
-                            //WARNING FOR LATER : handle last message that can be shorter
                             begin = clock();
                             if (sent > -1){
                                 flightSize ++;
@@ -300,6 +300,12 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                     }
                 }
             }
+        //TIMEOUT : segment lost
+        }else{
+            sstresh = flightSize/2;
+            sent = sendto(sock, (char*) msg,  filelen - (lastSent - initAck)*dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
+            window = 1;
+        }
     }
 
     //All bytes have been transmitted -> send END MSG
@@ -313,7 +319,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
     clock_t end = clock();
     float seconds = (float)(end - start) / CLOCKS_PER_SEC;
-    printf("program ran in %fs with window = %i\n", seconds, window);
+    printf("program ran in %fs with window = %f\n", seconds, window);
 
     //save time for comparison-----------------------------
     FILE* times = fopen("times.txt", "a");
