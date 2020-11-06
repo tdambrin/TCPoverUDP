@@ -17,6 +17,61 @@
 	#define SEQUENCELEN 4
 #endif
 
+struct model_elem{
+        int seqN;
+        char *data;
+        int dataLen;
+        struct model_elem *suivant;
+};
+
+typedef struct model_elem ELEMLIST;
+
+typedef ELEMLIST *LISTE;
+
+ELEMLIST *new_list(int val){
+        ELEMLIST *res;
+        res = (ELEMLIST *) malloc(sizeof(ELEMLIST));
+        res->seqN=val;
+        res->suivant=NULL;
+        return res;
+}
+
+void insertionListeTriee(LISTE *pliste, int val, char *data, int dataLen)	
+{
+       if((*pliste)==NULL){ 
+                (*pliste) = (LISTE) malloc(sizeof(LISTE));
+                if (pliste == NULL) {
+                        fprintf(stderr, "insertionListeTriee: plus de place mémoire");
+                        exit(EXIT_FAILURE);
+                }
+                (*pliste)->seqN = val;
+                memcpy(&((*pliste)->data), data, dataLen); 
+                (*pliste)->dataLen = dataLen;
+                (*pliste)->suivant = NULL;
+        }else if ((*pliste)->seqN >= val){
+                LISTE toSave = (LISTE) malloc(sizeof(LISTE));
+                *toSave = **pliste;
+                (*pliste)->seqN = val;
+                memcpy(&((*pliste)->data), data, dataLen); 
+                (*pliste)->dataLen = dataLen;
+                (*pliste)->suivant = toSave;
+                free(toSave);
+        }else{
+                insertionListeTriee(&((*pliste)->suivant), val, data, dataLen);
+        }
+  return;
+}
+
+int suppHead(LISTE *pliste){
+        if ( *pliste==NULL){
+                return 0;
+        }
+        LISTE tmp = *pliste;
+        *pliste = (*pliste)->suivant;
+        free(tmp);
+        return 1;
+}
+
 void intToSeqN(int x, char* res){
 //        char *res = (char*) malloc (SEQUENCELEN);
         strncpy(res, "00000000000000", SEQUENCELEN);
@@ -60,6 +115,10 @@ int synchro(int sock, struct sockaddr_in server){
 
 //fonction qui demande un fichier et qui acquitte les msg
 char* askForFile(int sock, struct sockaddr_in server, char* filename){
+        /* WARNINGS :
+          - if ACK sent, we consider that it is acked but sender may not have received it
+          - Do not write again the data of an already written seqN ()
+        */
         char buffer[RCVSIZE];
 	socklen_t serverLen = sizeof(server);
 	int recvdSize;
@@ -70,6 +129,7 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
         printf("AFTER INIT STRING\n");
         int fileSize;
         float rtt;
+        LISTE storedMsg;
 
         // ----------------------- SEND GET REQUEST TO SERVER --------------------
         char getMsg[] = "GET_";
@@ -122,7 +182,7 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
                 receivedSeqNStr[0] = '\0';
                 strncat(receivedSeqNStr, buffer, SEQUENCELEN);
                 seqNReceived = seqNToInt(receivedSeqNStr);
-                ackMsg[4] = '\0';
+                ackMsg[SEQUENCELEN] = '\0';
 
                 // First passage to set control vars because only server has the init seqN 
                 if (i == 0){
@@ -150,7 +210,7 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
                         }
                         printf("Consecutive | ANSWER : %s\n", ackMsg);
                         lastAcked ++;
-                        // WARNING !!!!! check if server send same msg 
+                        // WARNING !!!!!!! check if server send same msg 
                         memcpy(res + nextFree, buffer + SEQUENCELEN, recvdSize - SEQUENCELEN);
                         //printf("added msg at %i position\n", nextFree);
                         //memcpy(res + nextFree, "HERE", 4);
@@ -160,8 +220,30 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
                         nextFree += (recvdSize - SEQUENCELEN);
                         receivedBytes += recvdSize - SEQUENCELEN;
 
+                        if (storedMsg != NULL){
+                                while (storedMsg->seqN == lastAcked + 1){
+                                        ackMsg[SEQUENCELEN] = '\0';
+                                        intToSeqN(lastAcked + 1, currentSeqN);
+                                        strncat(ackMsg, currentSeqN, SEQUENCELEN);
+                                        sent = sendto(sock, ackMsg, strlen(ackMsg), MSG_CONFIRM, (struct sockaddr*)&server, serverLen);
+                                        while (sent < 0){
+                                                sent = sendto(sock, ackMsg, strlen(ackMsg), MSG_CONFIRM, (struct sockaddr*)&server, serverLen);
+                                        }
+                                        lastAcked ++;
+                                                // WARNING !!!!! check if server send same msg 
+                                        memcpy(res + nextFree, storedMsg->data,  storedMsg->dataLen);
+                                        //printf("added msg at %i position\n", nextFree);
+                                        //memcpy(res + nextFree, "HERE", 4);
+                                        //nextFree += 4;
+                                        nextFree += storedMsg -> dataLen;
+                                        receivedBytes += storedMsg->dataLen;
+                                        suppHead(&storedMsg);
+                                }
+                        }
+
                 // Received a non consecutive segment -> ack again the last acked
                 }else{
+                        insertionListeTriee(&storedMsg, seqNReceived, buffer, recvdSize); //store msg for later (fast restransmit)
                         intToSeqN(lastAcked, currentSeqN);
                         strncat(ackMsg, currentSeqN, SEQUENCELEN);
                         sent = sendto(sock, ackMsg, strlen(ackMsg), MSG_CONFIRM, (struct sockaddr*)&server, serverLen);
