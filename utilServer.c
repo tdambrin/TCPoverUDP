@@ -28,6 +28,7 @@
  * - create the com socket after a SYN even if synchro fail at the end
  */
 int synchro(int sock, struct sockaddr_in client, int port){
+
 	char buffer[RCVSIZE];
 	socklen_t clientLen = sizeof(client);
 	int recvdSize = recvfrom(sock, (char*) buffer, RCVSIZE, MSG_WAITALL, (struct sockaddr*)&client, &clientLen);
@@ -104,13 +105,18 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
     // ---------------------- INIT ---------------------
     char* content;
-    int window = 5;
+    int window = 1; //with slow start the window starts to 1...
+    float sstresh = 100; //...and the tresholt takes a first arbitrary great value at the beginning
     char* msg = (char*) malloc(dataSize + seqNsize);
     char* response = (char*) malloc(seqNsize+4);
     char strAck[] = "ACK_";
-    /*fd_set set;
+    fd_set set;
+    struct timeval timeout; //time after which we consider a segment lost
+    /*
     FD_ZERO(&set);
-    FD_SET(sock, &set);*/
+    FD_SET(sock, &set);
+    select(server_desc_udp+1,&descripteurs,NULL,NULL,NULL);
+    */
     
     //printf("FILENAME : begin:%s:end\n", filename);
 
@@ -151,6 +157,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     int dupAck = 0;
     char* currentSeqN = (char *) malloc (SEQUENCELEN);
     float srtt = 4; //arbitrary value, this estimator should converge to the real value of rtt
+    timeout.tv_sec = srtt;
 
     clock_t start = clock();
     clock_t begin,stop;
@@ -174,6 +181,12 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     }
 
     while (transmitted < filelen){
+            
+            FD_ZERO(&set);
+            FD_SET(sock, &set);
+            select(sock+1,&set,NULL,NULL,&timeout);
+
+            if( FD_ISSET(sock,&set) )
 
             //receive answer from client and update var
             recvdSize = recvfrom(sock, (char*) response, RCVSIZE, MSG_WAITALL, (struct sockaddr*)&client, &clientLen);
@@ -182,6 +195,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 	        stop = clock();
 	        float rtt = (float)(stop - begin) / CLOCKS_PER_SEC;
 	        srtt = ALPHA*srtt + (1-ALPHA)*rtt;
+            timeout.tv_sec = srtt;
 	        printf("[RTT : %f | SRTT : %f]\n",rtt,srtt);
 
             response[recvdSize] = '\0';
@@ -190,6 +204,14 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
             if (strcmp(response, "ACK_") == 0){
                 flightSize --; //because a segment has been acked
+                    //slowstart
+                if(window < sstresh){
+                    window += 1;
+                    //congestion avoidance
+                }else{
+                    window += 1/window;
+                }
+
                 if (maybeAcked == lastTransmittedSeqN + 1){ //currently acked segment is the very next one of the last acked segment
                     lastTransmittedSeqN++;
                     transmitted += dataSize; // WARNING : if dataSize=cste
@@ -219,8 +241,12 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                 }else{ //something went wrong with the transmission : the currently acked is not consecutive 
                     printf("Received a duplicated ACK\n");
                     dupAck ++; //WARNING : not necessarly a dup ACK ? (if one segment has been lost and the next is received : no dupACK)
+                    
                     if (dupAck >= 3){ //consider a lost segment
                         int i = 1; // used because we send from lastTransmitted but cant update lastTransmitted after just sending (got to receive the ack too)
+                        window = 1;
+                        sstresh = flightSize/2;
+
                         while (flightSize < window){
                             msg[0] = '\0';
                             intToSeqN(lastTransmittedSeqN + i, currentSeqN);
