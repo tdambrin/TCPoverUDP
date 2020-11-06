@@ -218,7 +218,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                     }
                 }else{ //something went wrong with the transmission : the currently acked is not consecutive 
                     printf("Received a duplicated ACK\n");
-                    dupAck ++; //WARNING : not necessarly a dup ACK ? (if one segment has been lost and the next is received : no dupACK)
+                    dupAck ++; //WARNING : not necessarly a dup ACK ? (if ack receiving order differs from ack sending order)
                     if (dupAck >= 3){ //consider a lost segment
                         int i = 1; // used because we send from lastTransmitted but cant update lastTransmitted after just sending (got to receive the ack too)
                         while (flightSize < window){
@@ -228,7 +228,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
                                 //if the message is shorter than dataSize
                             if(filelen - (lastSent - initAck)*dataSize < dataSize){
-                                memcpy(msg + seqNsize, content + (lastSent - initAck + 1)*dataSize, filelen - (lastSent - initAck)*dataSize); //WARNING : if dataSize=cste
+                                memcpy(msg + seqNsize, content + (lastSent - initAck + 1)*dataSize, filelen - (lastSent - initAck)*dataSize); //NING : if dataSize=cste
                                 sent = sendto(sock, (char*) msg,  filelen - (lastSent - initAck)*dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                             }else{
                                 memcpy(msg + seqNsize, content + (lastSent - initAck + 1)*dataSize, dataSize); //WARNING : if dataSize=cste
