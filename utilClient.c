@@ -163,6 +163,9 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
         int receivedBytes = 0;
         char* currentSeqN = (char*) malloc(SEQUENCELEN);
         char* receivedSeqNStr = (char*) malloc(SEQUENCELEN);
+
+        int lostSim = 0;
+        int indexLost = 20;
         //while (strcmp(buffer, stopMsg) != 0){
         while (receivedBytes < fileSize){
                 /*
@@ -203,6 +206,10 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
 
                 // Received a consecutive segment
                 }else if (seqNReceived == lastAcked + 1){
+                    if (seqNReceived == indexLost){
+                            lostSim = 5; // we are going to lose 5 packets
+                    }
+                    if (lostSim == 0){
                         strncat(ackMsg, buffer, SEQUENCELEN);
                         sent = sendto(sock, ackMsg, strlen(ackMsg), MSG_CONFIRM, (struct sockaddr*)&server, serverLen);
                         while (sent < 0){
@@ -240,7 +247,12 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
                                         suppHead(&storedMsg);
                                 }
                         }
-
+                    }else{
+                        if (lostSim == 5){
+                                indexLost += 30;
+                        }
+                        lostSim --;
+                    }
                 // Received a non consecutive segment -> ack again the last acked
                 }else{
                         insertionListeTriee(&storedMsg, seqNReceived, buffer, recvdSize); //store msg for later (fast restransmit)
