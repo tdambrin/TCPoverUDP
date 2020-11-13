@@ -186,8 +186,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     while (transmitted < filelen){
         
         FD_ZERO(&set);
-        //FD_SET(sock, &set);
-        select(sock+1,NULL,NULL,NULL,&timeout);
+        FD_SET(sock, &set);
+        select(sock+1,&set,NULL,NULL,&timeout);
 
         if( FD_ISSET(sock,&set) ){
             
@@ -249,6 +249,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                     printf("Received a duplicated ACK\n");
                     dupAck ++; //WARNING : not necessarly a dup ACK ? (if ack receiving order differs from ack sending order)
                     if (dupAck >= 3){ //consider a lost segment
+                        printf("At least 3 dupAcks\n");
+
                         int i = 1; // used because we send from lastTransmitted but cant update lastTransmitted after just sending (got to receive the ack too)
                         window = 1;
                         sstresh = flightSize/2;
@@ -282,7 +284,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                                 //printf("SENT %i bytes | seqN = %i \n", sent, lastTransmittedSeqN + i - 1);
                             }
                         }
-                    }else{ // not yet a lost segment -> keep sending
+                    }else{ // not yet considered as a lost segment -> keep sending
                         while (flightSize < floor(window) ){
                             msg[0] = '\0';
                             intToSeqN(lastSent + 1, currentSeqN);
@@ -313,7 +315,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             sstresh = flightSize/2;
             sent = sendto(sock, (char*) msg,  filelen - (lastSent - initAck)*dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
             window = 1;
-            timeout.tv_sec = srtt;
+            timeout.tv_sec = 2; // 000000000000000000000000000000000000000000000000000000000000000000000000
             timeout.tv_usec = 0;
         }
     }

@@ -45,6 +45,11 @@ void insertionListeTriee(LISTE *pliste, int val, char *data, int dataLen)
                         exit(EXIT_FAILURE);
                 }
                 (*pliste)->seqN = val;
+                (*pliste)->data = (char *) malloc(dataLen);
+                if ((*pliste)->data == NULL){
+                        fprintf(stderr, "insertionListeTriee: plus de place memoire\n");
+                        exit(EXIT_FAILURE);
+                }
                 memcpy(&((*pliste)->data), data, dataLen); 
                 (*pliste)->dataLen = dataLen;
                 (*pliste)->suivant = NULL;
@@ -206,10 +211,12 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
 
                 // Received a consecutive segment
                 }else if (seqNReceived == lastAcked + 1){
-                    if (seqNReceived == indexLost){
-                            lostSim = 5; // we are going to lose 5 packets
-                    }
-                    if (lostSim == 0){
+                        if (seqNReceived == indexLost){ //simulation of 5 lost packet at every *indexLost seqN
+                                for (int lSim= 0; lSim< 4; lSim++){
+                                        recvdSize = recvfrom(sock, buffer, 1030, MSG_WAITALL, (struct sockaddr*) &server, &serverLen); // receive next msg from server
+                                }
+                                indexLost += 30;
+                        }
                         strncat(ackMsg, buffer, SEQUENCELEN);
                         sent = sendto(sock, ackMsg, strlen(ackMsg), MSG_CONFIRM, (struct sockaddr*)&server, serverLen);
                         while (sent < 0){
@@ -247,12 +254,6 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
                                         suppHead(&storedMsg);
                                 }
                         }
-                    }else{
-                        if (lostSim == 5){
-                                indexLost += 30;
-                        }
-                        lostSim --;
-                    }
                 // Received a non consecutive segment -> ack again the last acked
                 }else{
                         insertionListeTriee(&storedMsg, seqNReceived, buffer, recvdSize); //store msg for later (fast restransmit)
