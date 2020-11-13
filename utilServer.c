@@ -156,6 +156,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     int flightSize = 0;
     int dupAck = 0;
     char* currentSeqN = (char *) malloc (SEQUENCELEN);
+    char* retrSeqN = (char *) malloc (SEQUENCELEN);
     float srtt = 4; //arbitrary value, this estimator should converge to the real value of rtt
     timeout.tv_sec = srtt;
     timeout.tv_usec = 0;
@@ -186,8 +187,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     while (transmitted < filelen){
         
         FD_ZERO(&set);
-        //FD_SET(sock, &set);
-        select(sock+1,NULL,NULL,NULL,&timeout);
+        FD_SET(sock, &set);
+        select(sock+1,&set,NULL,NULL,&timeout);
 
         if( FD_ISSET(sock,&set) ){
             
@@ -309,12 +310,18 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             }
         //TIMEOUT : segment lost
         }else{
-            printf("HERE\n");
+            printf("\nHERE, %d\n",lastTransmittedSeqN);
+            msg[0] = '\0';
+            intToSeqN(lastTransmittedSeqN, retrSeqN);
+            strncat(msg, retrSeqN, seqNsize);
+            printf("msg: %s\n",msg);
             sstresh = flightSize/2;
-            sent = sendto(sock, (char*) msg,  filelen - (lastSent - initAck)*dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
+            memcpy(msg + seqNsize, content + (lastTransmittedSeqN - initAck + 1)*dataSize, filelen - (lastTransmittedSeqN - initAck)*dataSize); //WARNING : if dataSize=cste
+            sent = sendto(sock, (char*) msg,  filelen - (lastTransmittedSeqN - initAck)*dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
             window = 1;
             timeout.tv_sec = srtt;
             timeout.tv_usec = 0;
+            sleep(1);
         }
     }
 
