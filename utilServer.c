@@ -312,12 +312,14 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         }else{
             printf("\nHERE, %d\n",lastTransmittedSeqN);
             msg[0] = '\0';
-            intToSeqN(lastTransmittedSeqN, retrSeqN);
+            intToSeqN(lastTransmittedSeqN+1, retrSeqN);
             strncat(msg, retrSeqN, seqNsize);
-            printf("msg: %s\n",msg);
+            printf("nSeq: %s\n",msg);
             sstresh = flightSize/2;
-            memcpy(msg + seqNsize, content + (lastTransmittedSeqN - initAck + 1)*dataSize, filelen - (lastTransmittedSeqN - initAck)*dataSize); //WARNING : if dataSize=cste
-            sent = sendto(sock, (char*) msg,  filelen - (lastTransmittedSeqN - initAck)*dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
+            memcpy(&msg[seqNsize], &content[ (lastTransmittedSeqN+1 - initAck + 1)*dataSize ], dataSize); //WARNING : if dataSize=cste
+            sent = sendto(sock, (char*) msg, dataSize + seqNsize + 2, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
+            printf("msg: %s\n",msg);
+
             window = 1;
             timeout.tv_sec = srtt;
             timeout.tv_usec = 0;

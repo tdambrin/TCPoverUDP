@@ -263,6 +263,8 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
                 //printf("CONSTRUCTED ACK : %s\n", ackMsg);
                 sendto(sock, ackMsg, strlen(ackMsg), MSG_CONFIRM, (struct sockaddr*)&server, serverLen);*/
                 bzero(buffer, recvdSize);
+                printf("\ni'm waiting here\n");
+                memset(buffer,0,RCVSIZE);
                 recvdSize = recvfrom(sock, buffer, 1030, MSG_WAITALL, (struct sockaddr*) &server, &serverLen); // receive next msg from server   
                 if(j == 8){
                         recvdSize = recvfrom(sock, buffer, 1030, MSG_WAITALL, (struct sockaddr*) &server, &serverLen); // receive next msg from server   
