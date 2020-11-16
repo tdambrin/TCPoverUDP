@@ -211,12 +211,6 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
 
                 // Received a consecutive segment
                 }else if (seqNReceived == lastAcked + 1){
-                        if (seqNReceived == indexLost){ //simulation of 5 lost packet at every *indexLost seqN
-                                for (int lSim= 0; lSim< 4; lSim++){
-                                        recvdSize = recvfrom(sock, buffer, 1030, MSG_WAITALL, (struct sockaddr*) &server, &serverLen); // receive next msg from server
-                                }
-                                indexLost += 30;
-                        }
                         strncat(ackMsg, buffer, SEQUENCELEN);
                         sent = sendto(sock, ackMsg, strlen(ackMsg), MSG_CONFIRM, (struct sockaddr*)&server, serverLen);
                         while (sent < 0){
