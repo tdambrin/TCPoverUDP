@@ -172,6 +172,7 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
 
         int lostSim = 0;
         int indexLost = 20;
+        char *written = (char*) malloc(300*SEQUENCELEN);
         //while (strcmp(buffer, stopMsg) != 0){
         while (receivedBytes < fileSize){
                 /*
@@ -204,6 +205,8 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
                         lastAcked = seqNReceived;
                         // WARNING !!!!! check if server send same msg 
                         memcpy(res + nextFree, buffer + SEQUENCELEN, recvdSize - SEQUENCELEN); // write received content to res
+                        strncat(written, buffer, SEQUENCELEN);
+                        strncat(written, " | ", SEQUENCELEN);
                         // update control vars
                         receivedBytes += recvdSize - SEQUENCELEN;
                         printf("Copied %i bytes | ", recvdSize - SEQUENCELEN);
@@ -230,6 +233,8 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
                         lastAcked ++;
                         // WARNING !!!!!!! check if server send same msg 
                         memcpy(res + nextFree, buffer + SEQUENCELEN, recvdSize - SEQUENCELEN);
+                        strncat(written, buffer, SEQUENCELEN);
+                        strncat(written, " | ", SEQUENCELEN);
                         //printf("added msg at %i position\n", nextFree);
                         //memcpy(res + nextFree, "HERE", 4);
                         //nextFree += 4;
@@ -250,6 +255,8 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
                                         lastAcked ++;
                                                 // WARNING !!!!! check if server send same msg 
                                         memcpy(res + nextFree, storedMsg->data,  storedMsg->dataLen);
+                                        strncat(written, buffer, SEQUENCELEN);
+                                        strncat(written, " | ", SEQUENCELEN);
                                         //printf("added msg at %i position\n", nextFree);
                                         //memcpy(res + nextFree, "HERE", 4);
                                         //nextFree += 4;
@@ -261,7 +268,7 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
                         }
                 // Received a non consecutive segment -> ack again the last acked
                 }else{
-                        insertionListeTriee(&storedMsg, seqNReceived, buffer, recvdSize); //store msg for later (fast restransmit)
+                        //insertionListeTriee(&storedMsg, seqNReceived, buffer, recvdSize); //store msg for later (fast restransmit)
                         intToSeqN(lastAcked, currentSeqN);
                         strncat(ackMsg, currentSeqN, SEQUENCELEN);
                         sent = sendto(sock, ackMsg, strlen(ackMsg), MSG_CONFIRM, (struct sockaddr*)&server, serverLen);
@@ -288,7 +295,7 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
                 //buffer[recvdSize] = '\0';
                 //printf("received MSG : %s\n", buffer);
                 i = 1;
-        }
+        }-
         printf("lastly received : %s\n", buffer);
         printf("STRCMP(%s,%s) = %i\n",buffer, stopMsg, strcmp(buffer, stopMsg));
         printf("ENDMSG = %s\n", stopMsg);
