@@ -268,7 +268,7 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
                         }
                 // Received a non consecutive segment -> ack again the last acked
                 }else{
-                        //insertionListeTriee(&storedMsg, seqNReceived, buffer, recvdSize); //store msg for later (fast restransmit)
+                        insertionListeTriee(&storedMsg, seqNReceived, buffer, recvdSize); //store msg for later (fast restransmit)
                         intToSeqN(lastAcked, currentSeqN);
                         strncat(ackMsg, currentSeqN, SEQUENCELEN);
                         sent = sendto(sock, ackMsg, strlen(ackMsg), MSG_CONFIRM, (struct sockaddr*)&server, serverLen);
