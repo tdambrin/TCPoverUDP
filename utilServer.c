@@ -328,7 +328,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     char endMsg[] = "END_";
     strncat(endMsg, filename, strlen(filename));
     sendto(sock, (char*) endMsg, strlen(endMsg), MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
-    printf("FILE CONTENT FULLY TRANSMITTED\n");
+    printf("FILE CONTENT FULLY TRANSMITTED, sent endMsg = %s\n", endMsg);
 
     //free(content);
 

@@ -273,6 +273,11 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
                 i = 1;
         }
         printf("lastly received : %s\n", buffer);
+        bzero(buffer, recvdSize);
+        recvdSize = recvfrom(sock, buffer, 1030, MSG_WAITALL, (struct sockaddr*) &server, &serverLen);
+        printf("lastly received : %s\n", buffer);
+
+        printf("ENDMSG = %s\n", stopMsg);
         printf("STRCMP(%s,%s) = %i\n",buffer, stopMsg, strcmp(buffer, stopMsg));
         printf("ENDMSG = %s\n", stopMsg);
         //printf("ALL FILE RECEIVED : res = %s\n", res);
