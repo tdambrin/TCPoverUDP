@@ -171,8 +171,8 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
 
         int lostSim = 0;
         int indexLost = 20;
-        //while (strcmp(buffer, stopMsg) != 0){
-        while (receivedBytes < fileSize){
+        while (strcmp(buffer, "FIN") != 0){
+        //while (receivedBytes < fileSize){
                 /*
                 memcpy(res + nextFree, "ICI", 3);
                 nextFree += 3;*/
@@ -272,9 +272,6 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
                 //printf("received MSG : %s\n", buffer);
                 i = 1;
         }
-        printf("lastly received : %s\n", buffer);
-        bzero(buffer, recvdSize);
-        recvdSize = recvfrom(sock, buffer, 1030, MSG_WAITALL, (struct sockaddr*) &server, &serverLen);
         printf("lastly received : %s\n", buffer);
 
         printf("ENDMSG = %s\n", stopMsg);
