@@ -14,7 +14,7 @@
 #endif
 
 #ifndef SEQUENCELEN
-	#define SEQUENCELEN 4
+	#define SEQUENCELEN 6
 #endif
 
 struct model_elem{
@@ -80,7 +80,7 @@ int suppHead(LISTE *pliste){
 void intToSeqN(int x, char* res){
 //        char *res = (char*) malloc (SEQUENCELEN);
         strncpy(res, "00000000000000", SEQUENCELEN);
-        res[SEQUENCELEN] = '\0'; 
+        res[3] = '\0'; 
         for (int i=SEQUENCELEN - 1; i >= 0; i--){
                 if (x >= pow(10, i)){
                     snprintf(res + SEQUENCELEN - i - 1, sizeof(res) - SEQUENCELEN + i + 1,"%d",x);
@@ -137,11 +137,12 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
         LISTE storedMsg;
 
         // ----------------------- SEND GET REQUEST TO SERVER --------------------
-        char getMsg[] = "GET_";
-        strncat(getMsg, filename, strlen(filename));
-        printf("AFTER SETTING GET MSG\n");
-        printf("GET MESSAGE : %s\n", getMsg);
-        sendto(sock, getMsg, strlen(getMsg), MSG_CONFIRM, (struct sockaddr*)&server, serverLen);
+        //char getMsg[] = "GET_";
+        //strncat(getMsg, filename, strlen(filename));
+        //printf("AFTER SETTING GET MSG\n");
+
+        printf("GET MESSAGE : %s\n", filename);
+        sendto(sock, filename, strlen(filename), MSG_CONFIRM, (struct sockaddr*)&server, serverLen);
 
         // --------------------- RECEIVE FILE SIZE AND INIT RES ------------------
 	recvfrom(sock, &fileSize, RCVSIZE, MSG_WAITALL, (struct sockaddr*) &server, &serverLen);
@@ -155,7 +156,7 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
         //ackMsg + 4 = (char*) malloc(SEQUENCELEN);
         strncat(stopMsg, filename, strlen(filename));
         printf("END MSG CONSTRUCTED: %s\n", stopMsg);
-        recvdSize = recvfrom(sock, buffer, 1028 , MSG_WAITALL, (struct sockaddr*) &server, &serverLen);
+        recvdSize = recvfrom(sock, buffer, 1032 , MSG_WAITALL, (struct sockaddr*) &server, &serverLen);
         //buffer[recvdSize] = '\0';
         //printf("RECEIVED FIRST CONTENT FRAG : %s\n", buffer);
 
@@ -190,7 +191,7 @@ char* askForFile(int sock, struct sockaddr_in server, char* filename){
                 receivedSeqNStr[0] = '\0';
                 strncat(receivedSeqNStr, buffer, SEQUENCELEN);
                 seqNReceived = seqNToInt(receivedSeqNStr);
-                ackMsg[SEQUENCELEN] = '\0';
+                ackMsg[3] = '\0';
 
                 // First passage to set control vars because only server has the init seqN 
                 if (i == 0){

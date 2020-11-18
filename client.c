@@ -66,10 +66,10 @@ int main (int argc, char *argv[]) {
 		  perror("Could not create new com socket\n");
 		  return -1;
 	  }
-	  char *fMsg = "First message !";
+	  //char *fMsg = "First message !";
 	  adresse_com.sin_port = htons(newPort);
-	  sendto(newSock, fMsg, strlen(fMsg), MSG_CONFIRM, (struct sockaddr*) &adresse_com, sizeof(adresse_com));
-	  printf("First message sent %s %d\n", inet_ntoa(adresse_com.sin_addr), ntohs(adresse_com.sin_port));
+	  //sendto(newSock, fMsg, strlen(fMsg), MSG_CONFIRM, (struct sockaddr*) &adresse_com, sizeof(adresse_com));
+	  //printf("First message sent %s %d\n", inet_ntoa(adresse_com.sin_addr), ntohs(adresse_com.sin_port));
   }
 
   // ------------------------ ASF FOR FILE (BY INPUT) -------------------

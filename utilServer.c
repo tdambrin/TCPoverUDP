@@ -16,25 +16,27 @@
 	#define RCVSIZE 1024
 #endif
 
+#ifndef PORTLEN
+    #define PORTLEN 4
+#endif
+
 #ifndef SEQUENCELEN //value used to estimate the rtt : +/- importance given to the RTT measured or to the RTT history
-	#define SEQUENCELEN 4
+	#define SEQUENCELEN 6
 #endif
 
 #ifndef ALPHA
 	#define ALPHA 0.6 //WARNING /!\ discuss about the value
 #endif
 
-/*Problems so far :
- * - create the com socket after a SYN even if synchro fail at the end
- */
+
 int synchro(int sock, struct sockaddr_in client, int port){
 
 	char buffer[RCVSIZE];
 	socklen_t clientLen = sizeof(client);
 	int recvdSize = recvfrom(sock, (char*) buffer, RCVSIZE, MSG_WAITALL, (struct sockaddr*)&client, &clientLen);
-        buffer[recvdSize] = '\0';
-        printf("%s\n", buffer);
-        if (strcmp(buffer, "SYN") == 0){ //SYN INITIATED BY CLIENT
+    buffer[recvdSize] = '\0';
+    printf("%s\n", buffer);
+    if (strcmp(buffer, "SYN") == 0){ //SYN INITIATED BY CLIENT
 		int fork_res = fork();
 		if (fork_res == 0){ //son process
 
@@ -61,9 +63,9 @@ int synchro(int sock, struct sockaddr_in client, int port){
 			return newSock;
 		}else{//parent process
 
-			char portstr[SEQUENCELEN + 1];
+			char portstr[PORTLEN + 1];
 			snprintf(portstr, sizeof(portstr),"%d",port);
-			char synack_msg[8 + SEQUENCELEN] = "SYN-ACK";
+			char synack_msg[8 + PORTLEN] = "SYN-ACK";
 			strcat(synack_msg, portstr);
 	        sendto(sock, (char*) synack_msg, strlen(synack_msg), MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
 			printf("SYNACK MESSAGE SENT : %s\n", synack_msg);
@@ -74,6 +76,7 @@ int synchro(int sock, struct sockaddr_in client, int port){
 			    	return 1;;
 		        }else{
 			  	printf("SYNCHRO STARTED BUT NOT FINISHED\n");
+                  return -1;
 			}
 		}
 	}else{
@@ -108,8 +111,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     float window = 1; //with slow start the window starts to 1...
     float sstresh = 100; //...and the tresholt takes a first arbitrary great value at the beginning
     char* msg = (char*) malloc(dataSize + seqNsize);
-    char* response = (char*) malloc(seqNsize+4);
-    char strAck[] = "ACK_";
+    char* response = (char*) malloc(seqNsize+3);
+    char strAck[] = "ACK";
     fd_set set;
     struct timeval timeout; //time after which we consider a segment lost
     /*
@@ -140,7 +143,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     fread(content, 1, filelen, fich);
     fclose(fich);
 
-    // -------------------- SEND FILE SIZE TO CLIENT FOR CLIENT INIT ----------------------
+    // -------------------- SEND FILE SIZE TO CLIENT FOR CLIENT INIT ---------------------- >> not needed for project clients
+    
     int sizeToSend = htonl(filelen);
     sendto(sock, &sizeToSend, sizeof(htonl(filelen)), MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
     printf("FILE SIZE SENT TO CLIENT\n");
@@ -166,7 +170,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
     //Send window first segments
     for (int i = 0; i < window; i++){
-        strAck[4] = '\0';
+        strAck[3] = '\0';
         intToSeqN(initAck + i, currentSeqN);
         strncat(strAck, currentSeqN, seqNsize);
         msg[0] = '\0';
@@ -205,12 +209,12 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 	        //printf("[RTT : %f | SRTT : %f]\n",rtt,srtt);
 
             response[recvdSize] = '\0';
-            maybeAcked = seqNToInt(response + 4);
-            response[4] = '\0';
+            maybeAcked = seqNToInt(response + 3);
+            response[3] = '\0';
 
             printf("ACK_%i RCV \n",maybeAcked);
 
-            if (strcmp(response, "ACK_") == 0){
+            if (strcmp(response, "ACK") == 0){
                 flightSize --; //because a segment has been acked
                     //slowstart
                 if(window < sstresh){

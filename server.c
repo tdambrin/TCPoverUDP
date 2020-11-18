@@ -16,7 +16,7 @@
 #endif
 
 #ifndef SEQUENCELEN
-	#define SEQUENCELEN 4
+	#define SEQUENCELEN 6
 #endif
 
 int main (int argc, char *argv[]) {
@@ -102,6 +102,9 @@ while (1) {
 		int msgSize;
 	  	msgSize = recvfrom(msgSock, buffer, RCVSIZE, MSG_WAITALL, (struct sockaddr*)&client, &clientLen);
 	  	buffer[msgSize]='\0';
+		readAndSendFile(msgSock, client, buffer, fragSize - SEQUENCELEN, SEQUENCELEN, 10); //current ack must be shared between son processes
+
+		/*
 		printf("FMsg received , size received : %s, %i\n",buffer, msgSize);
 
 		msgSize = recvfrom(msgSock, buffer, RCVSIZE, MSG_WAITALL, (struct sockaddr*)&client, &clientLen);
@@ -113,10 +116,11 @@ while (1) {
 		// case to handle client requests
 
 		// GET FILE
+
 		if (strcmp(msgType, "GET_") == 0){
 			printf("ABOUT TO READ & SEND\n");
 			readAndSendFile(msgSock, client, buffer + 4, fragSize - SEQUENCELEN, SEQUENCELEN, 10); //current ack must be shared between son processes
-		}
+		}*/
 
 		close(msgSock);
 		break; //connexion closed
