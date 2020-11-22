@@ -2,3 +2,7 @@
 *.txt
 *.o
 mean.py
+server
+client
+client1
+client2

@@ -24,6 +24,8 @@ char *ackx(int x){
 	return res;
 }
 int main(int arc, char *argv){
+	int res = 3/2;
+	printf("res = %i\n", res);
 	/*
 	char xstr[SEQUENCELEN + 1];
 	fgets(xstr, SEQUENCELEN + 10,stdin);
