@@ -28,6 +28,48 @@
 	#define ALPHA 0.6 //WARNING /!\ discuss about the value
 #endif
 
+void insertionListeTriee(LISTE *pliste, int val)	
+{
+       if((*pliste)==NULL){ 
+                (*pliste) = (LISTE) malloc(sizeof(LISTE));
+                if (pliste == NULL) {
+                        fprintf(stderr, "insertionListeTriee: plus de place mémoire");
+                        exit(EXIT_FAILURE);
+                }
+                (*pliste)->seqN = val;
+                (*pliste)->suivant = NULL;
+        }else if ((*pliste)->seqN >= val){
+                LISTE toSave = (LISTE) malloc(sizeof(LISTE));
+                *toSave = **pliste;
+                (*pliste)->seqN = val;
+                (*pliste)->suivant = toSave;
+                //free(toSave);
+        }else{
+                insertionListeTriee(&((*pliste)->suivant), val);
+        }
+  return;
+}
+
+int suppHead(LISTE *pliste){
+        if ( *pliste==NULL){
+                return 0;
+        }
+        LISTE tmp = *pliste;
+        *pliste = (*pliste)->suivant;
+        free(tmp);
+        return 1;
+}
+
+
+void printListe(LISTE l){
+    if (l == NULL){
+        printf("\n");
+    }else{
+        printf("%i | ", l->seqN);
+        printListe(l->suivant);
+    }
+}
+
 
 int synchro(int sock, struct sockaddr_in client, int port){
 
@@ -187,9 +229,10 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         //printf("SENT %i bytes | seqN = %i \n", sent, initAck+i);
     }
 
+    LISTE nextAcked = NULL;
     int lastSeqN = filelen/dataSize + 1 + initAck;
     int lastMsgSize = filelen - (lastSeqN - initAck)*dataSize;
-    printf("lastSEQN = %i\n", lastSeqN);
+    printf("lastSeqN = %i\n", lastSeqN);
     while (lastTransmittedSeqN < lastSeqN){
     //while (transmitted < filelen){
         FD_ZERO(&set);
@@ -227,7 +270,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
                 if (maybeAcked == lastTransmittedSeqN + 1){ //currently acked segment is the very next one of the last acked segment
                     lastTransmittedSeqN++;
-                    
+
                     if (maybeAcked == lastSeqN){
                         transmitted = filelen;
                     }else{
@@ -269,9 +312,16 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
                         printf("flightsize : %d, floor(window) : %f\n",flightSize,floor(window));
                     }
-                }else{ //something went wrong with the transmission : the currently acked is not consecutive	
-                    printf("Received a duplicated ACK, lastTrans = %i, received = %i\n", lastTransmittedSeqN, maybeAcked);
-                    dupAck ++; //WARNING : not necessarly a dup ACK ? (if ack receiving order differs from ack sending order)
+                }else{
+             //   }else if (maybeAcked <= lastTransmittedSeqN) { //something went wrong with the transmission : the currently acked is not consecutive	
+                    if (maybeAcked <= lastTransmittedSeqN){
+                        printf("Received a duplicated ACK, lastTrans = %i, received = %i\n", lastTransmittedSeqN, maybeAcked);
+                        dupAck ++; //WARNING : not necessarly a dup ACK ? (if ack receiving order differs from ack sending order)
+                    }else{
+                        printf("Received an ACK to store, lastTrans = %i, received = %i\n", lastTransmittedSeqN, maybeAcked);
+                        insertionListeTriee(&nextAcked, maybeAcked);
+                        printf("LISTE : "); printListe(nextAcked);
+                    }
                     if (dupAck >= 3){ //consider a lost segment
                         printf("At least 3 dupAcks\n");
 
@@ -350,14 +400,27 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         }
                     }
                 }
+                 int storedAck = -1;
+                    if (nextAcked != NULL){
+                        storedAck = nextAcked->seqN;
+                    }
+                    while (storedAck == lastTransmittedSeqN + 1){
+                        lastTransmittedSeqN ++;
+                        suppHead(&nextAcked);
+                        if (nextAcked != NULL){
+                            storedAck = nextAcked->seqN;
+                        }
+                    }
             }
         //TIMEOUT : segment lost
         }else{
             printf("HERE\n");
             sstresh = flightSize/2;
+
+            //--------------------------------------A MODIFIER : ENVOYER lastTrans + 1 et pas lastSent + 1-----------------------------------
             if(lastSent > lastSeqN - 1){
-                                printf("about to send from timeout\n");
-                                memcpy(msg + seqNsize, content + (lastSent - initAck + 1)*dataSize, filelen - (lastSent - initAck)*dataSize); //WARNING : if dataSize=cste
+                                printf("about to send from timeout, lastSent = %i\n", lastSent);
+                                memcpy(msg + seqNsize, content + (lastSent - initAck + 1)*dataSize, lastMsgSize); //WARNING : if dataSize=cste
                                 printf("copied msg\n");
                                 sent = sendto(sock, (char*) msg,  filelen - (lastSent - initAck)*dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                                 printf("sent msg\n");
@@ -367,7 +430,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             }
             sent = sendto(sock, (char*) msg,  filelen - (lastSent - initAck)*dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
             window = 1;
-            timeout.tv_sec = 2; // 000000000000000000000000000000000000000000000000000000000000000000000000
+            timeout.tv_sec = 2; 
             timeout.tv_usec = 0;
         }
     }
