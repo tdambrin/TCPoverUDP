@@ -1,4 +1,4 @@
-int synchro(int sock, struct sockaddr_in server);
+int synchro(int sock, struct sockaddr_in server, int port);
 char* askForFile(int sock, struct sockaddr_in server, char* filename);
 int seqNToInt(char *seqNumber);
 void intToSeqN(int x, char* res);
