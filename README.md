@@ -8,6 +8,8 @@
     (i) Première idée de comportement : renvoie les ACK dans l'ordre inverse/aléatoire + des timeout
 
 *Problème :
-    - Boucle dans le timeout
-    - #P Bloqué après 3 dupack -> l.261(envoie si message plus court que dataSize) revérifier les conditions -> Seems to be ok
+    - #P Boucle dans le timeout 
+        - Vérifier le segment à renvoyer
+    - Bloqué après 3 dupack -> l.261(envoie si message plus court que dataSize) revérifier les conditions -> Seems to be ok
         - bien vérifier quand les windows et sstresh sont re initialiser et les flightSize in/décrémenter
+    - sometimes do not receive the very first ACK (0)
