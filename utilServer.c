@@ -144,8 +144,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     int lastTransmittedSeqN = initAck - 1; //seqN of last acked segment
     int maybeAcked; //used to store seqN answered by client
     int flightSize = 0;
-    int dupAck = 0;
-    int lastDupAck = -1; 
+    int dupAck = 0; 
     char* currentSeqN = (char *) malloc (SEQUENCELEN);
     float srtt = 4; //arbitrary value, this estimator should converge to the real value of rtt
     timeout.tv_sec = srtt;
@@ -237,7 +236,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             printf("SEG_%i SENT \n",lastSent+1);
                        }else{
                             printf("before copy lastMSg\n");
-                            printf("msgSize = %li, dataSize = %i\n", filelen - (lastSent - initAck + 1)*dataSize, dataSize);
+                            printf("msgSize = %li, dataSize = %i\n", filelen - (lastSent + 1)*dataSize, dataSize);
                             printf("lastMsgSize = %i\n", lastMsgSize);
                             memcpy(msg + seqNsize, content + (lastSent + 1)*dataSize, lastMsgSize/10); //WARNING : if dataSize=cste
                             printf("after copy lastMsg\n");
@@ -273,7 +272,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             sent = sendto(sock, (char*) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                             printf("SEG_%i SENT \n",lastTransmittedSeqN+1);
                         }else{
-                            memcpy(msg + seqNsize, content + (lastDupAck+1)*dataSize, lastMsgSize); //NING : if dataSize=cste
+                            memcpy(msg + seqNsize, content + (lastTransmittedSeqN+1)*dataSize, lastMsgSize); //avant on avait mis lastDUpAck ici 
                             sent = sendto(sock, (char*) msg,  lastMsgSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                             printf("SEG_%i SENT \n",lastTransmittedSeqN+1);
                             printf("message :\n %s \n-------------------\n",msg);
@@ -284,7 +283,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
                         if (sent > -1){
                             flightSize ++;
-                            int diff = lastDupAck - lastSent;
+                            int diff = lastTransmittedSeqN+1 - lastSent; //avant on avait mis 'lastDupack - lastSent
                             if (diff > 0){
                                 lastSent += diff; //not sure
                             }
