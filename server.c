@@ -102,7 +102,7 @@ while (1) {
 		int msgSize;
 	  	msgSize = recvfrom(msgSock, buffer, RCVSIZE, MSG_WAITALL, (struct sockaddr*)&client, &clientLen);
 	  	buffer[msgSize]='\0';
-		readAndSendFile(msgSock, client, buffer, fragSize - SEQUENCELEN, SEQUENCELEN, 0); //current ack must be shared between son processes
+		readAndSendFile(msgSock, client, buffer, fragSize - SEQUENCELEN, SEQUENCELEN, 1); //current ack must be shared between son processes
 
 		/*
 		printf("FMsg received , size received : %s, %i\n",buffer, msgSize);

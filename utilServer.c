@@ -175,7 +175,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     }
 
    
-    int lastSeqN = filelen/dataSize + initAck;
+    int lastSeqN = filelen/dataSize + initAck ;
     int lastMsgSize = filelen - (lastSeqN - initAck)*dataSize;
     printf("lastSEQN = %i\n", lastSeqN);
     while (lastTransmittedSeqN < lastSeqN){
@@ -233,6 +233,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             memcpy(msg + seqNsize, content + (lastSent - initAck + 1)*dataSize, dataSize); //WARNING : if dataSize=cste
                             printf("after copy\n");
                             sent = sendto(sock, (char*) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
+                            printf("SEG_%i SENT \n",lastSent+1);
                        }else{
                             printf("before copy lastMSg\n");
                             printf("msgSize = %li, dataSize = %i\n", filelen - (lastSent - initAck + 1)*dataSize, dataSize);
@@ -240,6 +241,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             memcpy(msg + seqNsize, content + (lastSent - initAck + 1)*dataSize, lastMsgSize/10); //WARNING : if dataSize=cste
                             printf("after copy lastMsg\n");
                             sent = sendto(sock, (char*) msg,  lastMsgSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
+                            printf("SEG_%i SENT \n",lastSent+1);
+                            printf("message :\n %s \n-------------------\n",msg);
                         }
 
                         begin = clock();
@@ -247,7 +250,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             flightSize ++;
                             lastSent += 1;
                         }
-                        printf("\nSEG_%i SENT \n",lastSent); // PROBLEM HERE ********************************
+                        //printf("\nSEG_%i SENT \n",lastSent); // PROBLEM HERE ********************************
                         printf("flightsize : %d, floor(window) : %f\n",flightSize,floor(window));
                     }
                 }else if (lastTransmittedSeqN == maybeAcked) { //something went wrong with the transmission : the currently acked is not consecutive 
@@ -267,11 +270,12 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         if(lastTransmittedSeqN < lastSeqN - 1){
                             memcpy(msg + seqNsize, content + (lastTransmittedSeqN + 1 - initAck)*dataSize, dataSize); //WARNING : if dataSize=cste
                             sent = sendto(sock, (char*) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
-                            printf("SEG_%i SENT \n",lastDupAck+1);
+                            printf("SEG_%i SENT \n",lastTransmittedSeqN+1);
                         }else{
                             memcpy(msg + seqNsize, content + (lastDupAck+1 - initAck)*dataSize, lastMsgSize); //NING : if dataSize=cste
                             sent = sendto(sock, (char*) msg,  lastMsgSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
-                            printf("SEG_%i SENT \n",lastDupAck+1);
+                            printf("SEG_%i SENT \n",lastTransmittedSeqN+1);
+                            printf("message :\n %s \n-------------------\n",msg);
                         }
 
                         //WARNING FOR LATER : handle last message that can be shorter
@@ -296,13 +300,22 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             intToSeqN(lastSent + 1, currentSeqN);
                             strncat(msg, currentSeqN, seqNsize);
 
-                            //if the message is shorter than RCVSIZE
-                        if(filelen - (lastSent - initAck)*dataSize < dataSize){
-                            memcpy(msg + seqNsize, content + (lastSent - initAck + 1)*dataSize, lastMsgSize); //WARNING : if dataSize=cste
-                            sent = sendto(sock, (char*) msg,  lastMsgSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
-                       }else{
+                                //if the message is shorter than dataSize
+                        if( lastSent +1 < lastSeqN ){
+                            printf("before copy\n");
                             memcpy(msg + seqNsize, content + (lastSent - initAck + 1)*dataSize, dataSize); //WARNING : if dataSize=cste
+                            printf("after copy\n");
                             sent = sendto(sock, (char*) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
+                            printf("SEG_%i SENT \n",lastSent + 1);
+                       }else{
+                            printf("before copy lastMSg\n");
+                            printf("msgSize = %li, dataSize = %i\n", filelen - (lastSent - initAck + 1)*dataSize, dataSize);
+                            printf("lastMsgSize = %i\n", lastMsgSize);
+                            memcpy(msg + seqNsize, content + (lastSent - initAck + 1)*dataSize, lastMsgSize/10); //WARNING : if dataSize=cste
+                            printf("after copy lastMsg\n");
+                            sent = sendto(sock, (char*) msg,  lastMsgSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
+                            printf("SEG_%i SENT \n",lastSent + 1);
+                            printf("message :\n %s \n-------------------\n",msg);
                         }
 
                             begin = clock();
@@ -311,7 +324,6 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                                 lastSent += 1;
                                 //printf("SENT %i bytes | seqN = %i \n", sent, lastSent);
                             }
-                            printf("SEG_%i SENT \n",lastSent);
                             printf("flightsize : %d, floor(window) : %f, sent: %d\n",flightSize,floor(window),sent);
                         }
                     }
@@ -326,18 +338,21 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             intToSeqN(lastTransmittedSeqN + 1, currentSeqN);
             strncat(msg, currentSeqN, seqNsize);
 
-            if(lastTransmittedSeqN > lastSeqN - 1){
+            if(lastTransmittedSeqN >= lastSeqN - 1){
                 printf("about to send from timeout, lastTransmitted = %i\n", lastTransmittedSeqN+1);
                 memcpy(msg + seqNsize, content + (lastTransmittedSeqN - initAck + 1)*dataSize, lastMsgSize); //WARNING : if dataSize=cste
                 printf("copied msg\n");
                 sent = sendto(sock, (char *) msg,  lastMsgSize + seqNsize, MSG_CONFIRM, (struct sockaddr *)&client, clientLen);
+                printf("SEG_%i SENT \n",lastTransmittedSeqN+1);
+                printf("message :\n %s \n-------------------\n",msg);
             }else{
                 printf("about to send from timeout, lastTransmitted = %i\n", lastTransmittedSeqN+1);
                 memcpy(msg + seqNsize, content + (lastTransmittedSeqN - initAck + 1)*dataSize, dataSize); //WARNING : if dataSize=cste
                 printf("copied msg\n");
                 sent = sendto(sock, (char *) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr *)&client, clientLen);
+                printf("SEG_%i SENT \n",lastTransmittedSeqN+1);
             }
-            printf("SEG_%i SENT \n",lastTransmittedSeqN+1);
+            
             
             window = 1;
             sstresh = flightSize/2;
@@ -361,11 +376,11 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     printf("program ran in %fs with window = %f\n", seconds, window);
 
     //save time for comparison-----------------------------
-    FILE* times = fopen("times.txt", "a");
+   /* FILE* times = fopen("times.txt", "a");
     if (times){
         fprintf(times, "%f\n", seconds);
         fclose(times);
-    }
+    }*/
 
     return 1;
 }
