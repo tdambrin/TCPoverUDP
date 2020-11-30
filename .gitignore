@@ -2,3 +2,6 @@
 *.txt
 *.o
 mean.py
+*.png
+*.jpeg
+*.jpg
