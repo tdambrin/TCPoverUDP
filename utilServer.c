@@ -205,8 +205,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                 if(flightSize > 0){
                    flightSize --; //because a segment has been acked
                 }
-
-                if (maybeAcked > lastTransmittedSeqN && maybeAcked < lastSent + 1){ //currently acked segment is the next one of the last acked segment
+                if (maybeAcked > lastTransmittedSeqN){ //currently acked segment is the next one of the last acked segment
                     
                     //******slowstart
                       if(window < sstresh){
@@ -269,11 +268,11 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
                             //if the message is shorter than dataSize
                         if(lastTransmittedSeqN < lastSeqN - 1){
-                            memcpy(msg + seqNsize, content + (lastTransmittedSeqN + 1 - initAck)*dataSize, dataSize); //WARNING : if dataSize=cste
+                            memcpy(msg + seqNsize, content + (lastTransmittedSeqN - initAck + 1)*dataSize, dataSize); //WARNING : if dataSize=cste
                             sent = sendto(sock, (char*) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                             printf("SEG_%i SENT \n",lastTransmittedSeqN+1);
                         }else{
-                            memcpy(msg + seqNsize, content + (lastTransmittedSeqN+1-initAck)*dataSize, lastMsgSize); //avant on avait mis lastDUpAck ici 
+                            memcpy(msg + seqNsize, content + (lastTransmittedSeqN - initAck + 1)*dataSize, lastMsgSize); //avant on avait mis lastDUpAck ici 
                             sent = sendto(sock, (char*) msg,  lastMsgSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                             printf("SEG_%i SENT \n",lastTransmittedSeqN+1);
                             printf("message :\n %s \n-------------------\n",msg);
@@ -375,7 +374,29 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     clock_t end = clock();
     float seconds = (float)(end - start) / CLOCKS_PER_SEC;
     printf("program ran in %fs with window = %f\n", seconds, window);
+
+    /*sleep(1);
+    printf("About to read file\n");
+    FILE* recept = fopen("copy_rfc793.pdf", "r");
+    char* rContent = (char*) malloc(filelen);
+    if (rContent == NULL){
+        printf("No more memory\n");
+    }else{
+        printf("opened and init rContent done¡\n");
+    }
+    fread(rContent, 1, filelen, recept);
+    fclose(recept);
+    printf("file closed\n");
+    printf("Comparing received and sent\n");
+    for (long i = 0; i<filelen; i++){
+        if (content[i] != rContent[i]){
+            printf("\n\nNOT SAME, i=%li <=> content[i]=%c & rContent[i]=%c,\n\n", i, content[i], rContent[i]);
+            break;
+        }
+    }
+    printf("Compared\n");*/
     
+
 
     //save time for comparison-----------------------------
    /* FILE* times = fopen("times.txt", "a");
@@ -384,7 +405,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         fclose(times);
     }*/
 
-    return 1;
+    return 0;
 }
 
 //not used yet
