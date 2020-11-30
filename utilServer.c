@@ -205,7 +205,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                 if(flightSize > 0){
                    flightSize --; //because a segment has been acked
                 }
-                if (maybeAcked > lastTransmittedSeqN){ //currently acked segment is the next one of the last acked segment
+
+                if (maybeAcked > lastTransmittedSeqN && maybeAcked < lastSent + 1){ //currently acked segment is the next one of the last acked segment
                     
                     //******slowstart
                       if(window < sstresh){
