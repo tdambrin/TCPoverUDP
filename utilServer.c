@@ -205,7 +205,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                 if(flightSize > 0){
                    flightSize --; //because a segment has been acked
                 }
-                if (maybeAcked > lastTransmittedSeqN){ //currently acked segment is the next one of the last acked segment
+
+                if (maybeAcked > lastTransmittedSeqN && maybeAcked <= lastSent ){ //currently acked segment is the next one of the last acked segment
                     
                     //******slowstart
                       if(window < sstresh){
@@ -295,6 +296,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         dupAck = 0;
                     
                     }else{ // not yet considered as a lost segment -> keep sending
+                        printf("flightsize : %d, floor(window) : %f, sent: %d\n",flightSize,floor(window),sent);
                         while (flightSize < floor(window) && lastSent < lastSeqN - 1){
                             msg[0] = '\0';
                             intToSeqN(lastSent + 1, currentSeqN);
