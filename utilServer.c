@@ -335,6 +335,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         }else{
             printf("\n#TIMEOUT\n");
 
+            msg[0] = '\0';
+
             intToSeqN(lastTransmittedSeqN + 1, currentSeqN);
             strncat(msg, currentSeqN, seqNsize);
 
