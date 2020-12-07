@@ -334,6 +334,10 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         //TIMEOUT : segment lost
         }else{
             printf("\n#TIMEOUT\n");
+            sstresh = flightSize/2;
+            window = 1;
+
+            msg[0] = '\0';
 
             intToSeqN(lastTransmittedSeqN + 1, currentSeqN);
             strncat(msg, currentSeqN, seqNsize);
@@ -356,7 +360,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             
             window = 1;
             sstresh = flightSize/2;
-            timeout.tv_sec = srtt*10; 
+            timeout.tv_sec = srtt; 
             timeout.tv_usec = 0;
         }
     }
