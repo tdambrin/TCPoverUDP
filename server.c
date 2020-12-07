@@ -120,7 +120,7 @@ while (1) {
 		if (strcmp(msgType, "GET_") == 0){
 			printf("ABOUT TO READ & SEND\n");
 			readAndSendFile(msgSock, client, buffer + 4, fragSize - SEQUENCELEN, SEQUENCELEN, 10); //current ack must be shared between son processes
-		}*/
+		}*/	
 
 		close(msgSock);
 		break; //connexion closed
