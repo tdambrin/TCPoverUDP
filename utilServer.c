@@ -370,7 +370,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
     gettimeofday(&end,NULL);
     long seconds = (end.tv_sec - start.tv_sec);
-    long micros = (end.tv_usec - start.tv_usec);
+    long micros = (seconds*1000000 + end.tv_usec - start.tv_usec);
     printf("\n-------------------\nPROGRAM RAN IN :\n %ld s and %ld us \nwith window = %f\n-------------------\n", seconds,micros,window);
     
 
