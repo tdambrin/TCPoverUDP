@@ -205,7 +205,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                 //Estimation du RTT sur lequel vont se baser les futures estimations du RTT
 	        gettimeofday(&stop,NULL);
 	        double rtt = (float)( (stop.tv_sec - begin.tv_sec)*1000000 + stop.tv_usec - begin.tv_usec);
-	        srtt = ALPHA*srtt + (1-ALPHA)*rtt;
+		srtt = ALPHA*srtt + (1-ALPHA)*rtt;
             timeout.tv_usec = srtt;
 
             response[recvdSize] = '\0';
