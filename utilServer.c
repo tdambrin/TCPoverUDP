@@ -323,6 +323,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         }else{
             printf("\n#TIMEOUT\n");
 
+            msg[0] = '\0';
             intToSeqN(lastTransmittedSeqN + 1, currentSeqN);
             strncat(msg, currentSeqN, seqNsize);
 
@@ -343,6 +344,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             sstresh = flightSize/2;
             timeout.tv_sec = srtt_sec; 
             timeout.tv_usec = srtt_usec;
+            printf("\n SRTT : \n %ld sec.\n %ld usec.\n\n",srtt_sec,srtt_usec);
         }
     }
 
