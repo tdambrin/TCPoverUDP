@@ -146,23 +146,10 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     int flightSize = 0;
     int dupAck = 0; 
     char* currentSeqN = (char *) malloc (SEQUENCELEN);
-    double srtt = 4*100000; //arbitrary value, this estimator should converge to the real value of rtt
-    timeout.tv_sec = 0;
-    timeout.tv_usec = srtt;
-
-
-    struct timeval now, later;
-    gettimeofday(&now, NULL);
-    sleep(2);
-    gettimeofday(&later, NULL);
-    float sleeptime= (later.tv_sec - now.tv_sec)*1000000 + later.tv_usec - now.tv_usec;
-    printf("now->later : %f\n", sleeptime);
-    struct timeval test;
-    test.tv_sec = 2;
-    test.tv_usec = 300;
-    printf("before select : %ld\n", test.tv_sec);
-    select(2, NULL, NULL, NULL, &test);
-    printf("after select : %ld\n", test.tv_sec);
+    long srtt_sec = 0; //arbitrary value, this estimator should converge to the real value of rtt
+    long srtt_usec = 100000;
+    timeout.tv_sec = srtt_sec;
+    timeout.tv_usec = srtt_usec;
 
     gettimeofday(&start, NULL);
     //WARNING : if window greater than total nb of segments 
@@ -196,6 +183,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     //while (transmitted < filelen){
         FD_ZERO(&set);
         FD_SET(sock, &set);
+        printf("timeout : %ld s and %ld ms\n", timeout.tv_sec, timeout.tv_usec);
         select(sock+1,&set,NULL,NULL,&timeout);
 
         if( FD_ISSET(sock,&set) ){
@@ -204,9 +192,12 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
                 //Estimation du RTT sur lequel vont se baser les futures estimations du RTT
 	        gettimeofday(&stop,NULL);
-	        double rtt = (float)( (stop.tv_sec - begin.tv_sec)*1000000 + stop.tv_usec - begin.tv_usec);
-		srtt = ALPHA*srtt + (1-ALPHA)*rtt;
-            timeout.tv_usec = srtt;
+	        long rtt_sec = stop.tv_sec - begin.tv_sec;
+            srtt_sec = ALPHA*srtt_sec + (1 - ALPHA)*rtt_sec;
+            long rtt_usec = rtt_sec*1000000 + stop.tv_usec - begin.tv_usec;
+		    srtt_usec = ALPHA*srtt_usec + (1-ALPHA)*rtt_usec;
+            timeout.tv_sec = srtt_sec;
+            timeout.tv_usec = srtt_usec;
 
             response[recvdSize] = '\0';
             maybeAcked = seqNToInt(response + 3);
@@ -367,14 +358,14 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                 memcpy(msg + seqNsize, content + (lastTransmittedSeqN - initAck + 1)*dataSize, dataSize); //WARNING : if dataSize=cste
                 //printf("copied msg\n");
                 sent = sendto(sock, (char *) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr *)&client, clientLen);
-                printf("SEG_%i SENT from timeout with rtt = %f\n",lastTransmittedSeqN+1, srtt);
+                printf("SEG_%i SENT from timeout with rtt = %lds and %ldms\n",lastTransmittedSeqN+1, srtt_sec,srtt_usec);
             }
-            
+            gettimeofday(&begin,NULL);
             
             window = 1;
             sstresh = flightSize/2;
-            timeout.tv_sec = 0; 
-            timeout.tv_usec = srtt;
+            timeout.tv_sec = srtt_sec; 
+            timeout.tv_usec = srtt_usec;
         }
     }
 
@@ -394,7 +385,6 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     gettimeofday(&end,NULL);
     float execTime = (float)(end.tv_sec*1000000 + end.tv_usec - start.tv_sec*1000000 - start.tv_usec);
     printf("program ran in %fs with window = %f\n", execTime, window);
-    printf("after select : %ld\n", test.tv_sec);
 
     /*sleep(1);
     printf("About to read file\n");
