@@ -336,25 +336,11 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             if(lastTransmittedSeqN >= lastSeqN - 1){
                 printf("about to send from timeout, lastTransmitted = %i\n", lastTransmittedSeqN+1);
                 memcpy(msg + seqNsize, content + (lastTransmittedSeqN + 1 - initAck)*dataSize, lastMsgSize); //WARNING : if dataSize=cste
-<<<<<<< HEAD
-=======
-                printf("copied msg\n");
-                if (strstr(msg,"Scope")){
-                                printf("------------CONTAINS SCOPE-------------\n seqN = %i, mode=timeout\n",lastTransmittedSeqN+1);
-                            }
->>>>>>> ddf8242381df0710b1646f7a2e8858deec19e42d
                 sent = sendto(sock, (char *) msg,  lastMsgSize + seqNsize, MSG_CONFIRM, (struct sockaddr *)&client, clientLen);
                 printf("SEG_%i SENT \n",lastTransmittedSeqN+1);
             }else{
                 printf("about to send from timeout, lastTransmitted = %i\n", lastTransmittedSeqN+1);
                 memcpy(msg + seqNsize, content + (lastTransmittedSeqN + 1 - initAck)*dataSize, dataSize); //WARNING : if dataSize=cste
-<<<<<<< HEAD
-=======
-                printf("copied msg\n");
-                if (strstr(msg,"Scope")){
-                                printf("------------CONTAINS SCOPE-------------\n seqN = %i, mode=timeout+last\n",lastTransmittedSeqN+1);
-                            }
->>>>>>> ddf8242381df0710b1646f7a2e8858deec19e42d
                 sent = sendto(sock, (char *) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr *)&client, clientLen);
                 printf("SEG_%i SENT \n",lastTransmittedSeqN+1);
             }
@@ -382,37 +368,10 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
     //free(content);
 
-<<<<<<< HEAD
     gettimeofday(&end,NULL);
     long seconds = (end.tv_sec - start.tv_sec);
     long micros = (end.tv_usec - start.tv_usec);
     printf("\n-------------------\nPROGRAM RAN IN :\n %ld s and %ld us \nwith window = %f\n-------------------\n", seconds,micros,window);
-=======
-    clock_t end = clock();
-    float seconds = (float)(end - start) / CLOCKS_PER_SEC;
-    printf("program ran in %fs with window = %f\n", seconds, window);
-
-    /*sleep(1);
-    printf("About to read file\n");
-    FILE* recept = fopen("copy_rfc793.pdf", "r");
-    char* rContent = (char*) malloc(filelen);
-    if (rContent == NULL){
-        printf("No more memory\n");
-    }else{
-        printf("opened and init rContent done¡\n");
-    }
-    fread(rContent, 1, filelen, recept);
-    fclose(recept);
-    printf("file closed\n");
-    printf("Comparing received and sent\n");
-    for (long i = 0; i<filelen; i++){
-        if (content[i] != rContent[i]){
-            printf("\n\nNOT SAME, i=%li <=> content[i]=%c & rContent[i]=%c,\n\n", i, content[i], rContent[i]);
-            break;
-        }
-    }
-    printf("Compared\n");*/
->>>>>>> ddf8242381df0710b1646f7a2e8858deec19e42d
     
 
 
