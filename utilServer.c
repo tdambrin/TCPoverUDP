@@ -235,25 +235,9 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             //if the message is shorter than dataSize
                         if( lastSent +1 < lastSeqN ){
                             memcpy(msg + seqNsize, content + (lastSent + 1 - initAck)*dataSize, dataSize); //WARNING : if dataSize=cste
-<<<<<<< HEAD
                             sent = sendto(sock, (char*) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                             printf("SEG_%i SENT \n",lastSent+1);
                        }else{
-=======
-                            printf("after copy\n");
-                            if (strstr(msg,"Scope")){
-                                printf("------------CONTAINS SCOPE-------------\n seqN = %i, mode=goodAck\n",lastSent+1);
-                            }
-                            sent = sendto(sock, (char*) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
-                            printf("SEG_%i SENT \n",lastSent+1);
-                       }else{
-                            printf("before copy lastMSg\n");
-                            printf("msgSize = %li, dataSize = %i\n", filelen - (lastSent + 1 - initAck)*dataSize, dataSize);
-                            printf("lastMsgSize = %i\n", lastMsgSize);
-                            if (strstr(msg,"Scope")){
-                                printf("------------CONTAINS SCOPE-------------\n seqN = %i, mode=goodAck+last\n",lastSent+1);
-                            }
->>>>>>> ddf8242381df0710b1646f7a2e8858deec19e42d
                             memcpy(msg + seqNsize, content + (lastSent + 1 - initAck)*dataSize, lastMsgSize); //WARNING : if dataSize=cste
                             sent = sendto(sock, (char*) msg,  lastMsgSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                             printf("SEG_%i SENT \n",lastSent+1);
@@ -319,28 +303,10 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                                 //if the message is shorter than dataSize
                         if( lastSent +1 < lastSeqN ){
                             memcpy(msg + seqNsize, content + (lastSent + 1 - initAck)*dataSize, dataSize); //WARNING : if dataSize=cste
-<<<<<<< HEAD
                             sent = sendto(sock, (char*) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                             printf("SEG_%i SENT \n",lastSent + 1);
                        }else{
                             memcpy(msg + seqNsize, content + (lastSent + 1 - initAck)*dataSize, lastMsgSize/10); //WARNING : if dataSize=cste
-=======
-                            printf("after copy\n");
-                            if (strstr(msg,"Scope")){
-                                printf("------------CONTAINS SCOPE-------------\n seqN = %i, mode=<3dupAck\n",lastSent+1);
-                            }
-                            sent = sendto(sock, (char*) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
-                            printf("SEG_%i SENT \n",lastSent + 1);
-                       }else{
-                            printf("before copy lastMSg\n");
-                            printf("msgSize = %li, dataSize = %i\n", filelen - (lastSent - initAck + 1)*dataSize, dataSize);
-                            printf("lastMsgSize = %i\n", lastMsgSize);
-                            memcpy(msg + seqNsize, content + (lastSent + 1 - initAck)*dataSize, lastMsgSize); //WARNING : if dataSize=cste
-                            printf("after copy lastMsg\n");
-                            if (strstr(msg,"Scope")){
-                                printf("------------CONTAINS SCOPE-------------\n seqN = %i, mode=<3dupAck+last>\n",lastSent+1);
-                            }
->>>>>>> ddf8242381df0710b1646f7a2e8858deec19e42d
                             sent = sendto(sock, (char*) msg,  lastMsgSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                             printf("SEG_%i SENT \n",lastSent + 1);
                         }
