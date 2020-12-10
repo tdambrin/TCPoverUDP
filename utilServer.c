@@ -148,6 +148,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     char* currentSeqN = (char *) malloc (SEQUENCELEN);
     long srtt_sec = 2; //arbitrary value, this estimator should converge to the real value of rtt_sec
     long srtt_usec = 0;
+    long srtt_usec_test = 0;
     timeout.tv_sec = srtt_sec;
     timeout.tv_usec = 0;
 
@@ -176,7 +177,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         //printf("SENT %i bytes | seqN = %i \n", sent, initAck+i);
     }
 
-   
+    int lastDupAckRetr = -1;
     int lastSeqN = filelen/dataSize + initAck ;
     int lastMsgSize = filelen - (lastSeqN - initAck)*dataSize;
     printf("lastSEQN = %i\n", lastSeqN);
@@ -197,8 +198,12 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 	        srtt_sec = ALPHA*srtt_sec + (1-ALPHA)*rtt_sec;
             timeout.tv_sec = srtt_sec;
 	        long rtt_usec = (stop.tv_usec - begin.tv_usec);
-            srtt_usec = ALPHA*srtt_usec + (1-ALPHA)*rtt_usec;
-            timeout.tv_usec = (stop.tv_usec - begin.tv_usec);
+            srtt_usec_test = ALPHA*srtt_usec + (1-ALPHA)*rtt_usec;
+            if (srtt_usec_test > 0) {
+                srtt_usec = srtt_usec_test;
+                timeout.tv_usec = (stop.tv_usec - begin.tv_usec);
+            }
+            
 
 
             response[recvdSize] = '\0';
@@ -249,14 +254,14 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             lastSent += 1;
                         }
                     }
-                }else if (lastTransmittedSeqN == maybeAcked) { //something went wrong with the transmission : the currently acked is not consecutive 
+                }else if (lastTransmittedSeqN == maybeAcked && lastDupAckRetr != maybeAcked) { //something went wrong with the transmission : the currently acked is not consecutive 
 
                     dupAck ++; //WARNING : not necessarly a dup ACK ? (if ack receiving order differs from ack sending order)
                     printf("Received ACK_%d for the %d time\n",maybeAcked,dupAck);
 
                     if (dupAck >= 3){ //consider a lost segment
                         printf("At least 3 dupAcks\n");
-
+                        lastDupAckRetr = maybeAcked;
                         msg[0] = '\0';
                         intToSeqN(lastTransmittedSeqN + 1, currentSeqN);
                         strncat(msg, currentSeqN, seqNsize);
