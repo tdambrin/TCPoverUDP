@@ -295,7 +295,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         }
                         
                         sstresh = flightSize/2;
-                        window = floor(lastSeqN*0.05);
+                        window = 1;
                         dupAck = 0;
                     
                     }else{ // not yet considered as a lost segment -> keep sending
@@ -363,7 +363,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             }
             gettimeofday(&begin,NULL);
             
-            window = floor(lastSeqN*0.05);
+            window = 1;
             //window = 1; //justify if we chose something != 1
             sstresh = flightSize/2;
             printf("\n SRTT : \n %ld sec.\n %ld usec.\n\n",srtt_sec,srtt_usec);
