@@ -108,7 +108,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
     // ---------------------- INIT ---------------------
     char* content;
-    float window = 1; //with slow start the window starts to 1...
+    //float window = 1; //with slow start the window starts to 1...
     float sstresh = 100; //...and the tresholt takes a first arbitrary great value at the beginning
     char* msg = (char*) malloc(dataSize + seqNsize);
     char* response = (char*) malloc(seqNsize+3);
@@ -138,6 +138,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     fclose(fich);
 
     //--------------------------- SEND FILE CONTENT TO CLIENT -----------------
+    int lastSeqN = filelen/dataSize + initAck ;
+    float window = floor(lastSeqN*0.05); //try to begin with a bigger window, 5% of the number of segment we have to send
     int sent = -1;
     int transmitted = 0; //nb of bytes sent and acked
     int lastSent = initAck - 1; //seqN of last sent segment
@@ -154,8 +156,12 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     struct timeval start,end,begin,stop;
     gettimeofday(&start,NULL);
 
-    //WARNING : if window greater than total nb of segments 
+    //----------- PERF ---------------------
+    int lastDupAckRetr = -1;
+    
 
+
+    
     //Send window first segments
     for (int i = 0; i < window; i++){
         printf("\n#lastSent: %d\n\n",lastSent);
@@ -176,8 +182,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         //printf("SENT %i bytes | seqN = %i \n", sent, initAck+i);
     }
 
-    int lastDupAckRetr = -1;
-    int lastSeqN = filelen/dataSize + initAck ;
+    //int lastSeqN = filelen/dataSize + initAck ;
     int lastMsgSize = filelen - (lastSeqN - initAck)*dataSize;
     printf("lastSEQN = %i\n", lastSeqN);
 
@@ -214,17 +219,19 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                    flightSize --; //because a segment has been acked
                 }
 
-                if (maybeAcked > lastTransmittedSeqN && maybeAcked <= lastSent ){ //currently acked segment is the next one of the last acked segment
-                    
-                    //******slowstart
+                //******slowstart
                       if(window < sstresh){
+                          printf("\n*slowstart*\n");
                           window += maybeAcked - lastTransmittedSeqN;
                           //congestion avoidance
                       }else{
+                          printf("\n*congestion avoidance*\n");
                           window += ( (maybeAcked - lastTransmittedSeqN)/floor(window) );
                       }
                     //*********
 
+                if (maybeAcked > lastTransmittedSeqN && maybeAcked <= lastSent ){ //currently acked segment is the next one of the last acked segment
+                    
                       lastTransmittedSeqN = maybeAcked;
                       dupAck = 0; // /!\check
 
@@ -348,7 +355,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             }
             gettimeofday(&begin,NULL);
             
-            window = 1; //justify if we chose something != 1
+            window = floor(lastSeqN*0.05);
+            //window = 1; //justify if we chose something != 1
             sstresh = flightSize/2;
             timeout.tv_sec = srtt_sec; 
             timeout.tv_usec = srtt_usec;
@@ -373,7 +381,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     gettimeofday(&end,NULL);
     long seconds = (end.tv_sec - start.tv_sec);
     long micros = (seconds*1000000 + end.tv_usec - start.tv_usec);
-    printf("\n-------------------\nPROGRAM RAN IN :\n %ld s and %ld us \nwith window = %f\n-------------------\n", seconds,micros,window);
+    printf("\n-------------------\nPROGRAM RAN IN :\n %ld s and %ld us \nwith window = %f\n throughput = %f MB/s\n-------------------\n", seconds,micros,window,
+    (filelen/ ( seconds+micros*(pow(10,-6)) ) )*pow(10,-6) );
     
 
 
