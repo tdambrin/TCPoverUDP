@@ -335,17 +335,6 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         }else{
             printf("\n#TIMEOUT\n");
 
-            //Estimation du rtt_sec sur lequel vont se baser les futures estimations du rtt_sec
-	        gettimeofday(&stop,NULL);
-	        long rtt_sec = (stop.tv_sec - begin.tv_sec);
-	        srtt_sec = ALPHA*srtt_sec + (1-ALPHA)*rtt_sec;
-            timeout.tv_sec = srtt_sec;
-	        long rtt_usec = (rtt_sec*1000000 + stop.tv_usec - begin.tv_usec);
-            srtt_usec = ALPHA*srtt_usec + (1-ALPHA)*rtt_usec;
-            timeout.tv_usec = srtt_usec;
-            //-------------------
-            
-
             msg[0] = '\0';
             intToSeqN(lastTransmittedSeqN + 1, currentSeqN);
             strncat(msg, currentSeqN, seqNsize);

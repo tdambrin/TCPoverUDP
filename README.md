@@ -17,5 +17,3 @@
 *NEW : 
     - commencer avec une fenetre = 5% de lenSeqN et idem dans timeout
     - incrémentation de la fenêtre à chaque ACK recu et pas à seulement aux ACK continus. 
-    - calcul du SRTT dans le timeout 
-    - 
