@@ -220,7 +220,12 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                    flightSize --; //because a segment has been acked
                 }
 
-                //******slowstart
+                if (maybeAcked > lastTransmittedSeqN && maybeAcked <= lastSent ){ //currently acked segment is the next one of the last acked segment
+                      printf("normal ACK");
+                      lastTransmittedSeqN = maybeAcked;
+                      dupAck = 0; // /!\check
+
+                      //******slowstart
                       if(window < sstresh){
                           printf("\n*slowstart*\n");
                           window += maybeAcked - lastTransmittedSeqN;
@@ -230,11 +235,6 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                           window += ( (maybeAcked - lastTransmittedSeqN)/floor(window) );
                       }
                     //*********
-
-                if (maybeAcked > lastTransmittedSeqN && maybeAcked <= lastSent ){ //currently acked segment is the next one of the last acked segment
-                      printf("normal ACK");
-                      lastTransmittedSeqN = maybeAcked;
-                      dupAck = 0; // /!\check
 
                       //transmit next segments (from lastSent not lastTransmitted)
                       while (flightSize < floor(window) && lastSent < lastSeqN ){
