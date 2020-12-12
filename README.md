@@ -9,8 +9,13 @@
 
 *Problème :
     - vérifier le cas ou la retransmission dupack echoue et qu'on la renvoie jamais -> compteur de dupAck ignoré
+    - souvent on ne passe pas dans la boucle while d'envoi à cause de window <= flightsize -------> timeout grandit
+    - REGLER SRTT !
+    - on envoie quasi jamais des salves de SEG toujours 1 par 1
+    - fenetre negative
 
 *NEW : 
     - commencer avec une fenetre = 5% de lenSeqN et idem dans timeout
-    - essayé de réduire le nombre de timeout envoyé -> fonctionne pas (recherche pas très poussée)
     - incrémentation de la fenêtre à chaque ACK recu et pas à seulement aux ACK continus. 
+    - calcul du SRTT dans le timeout 
+    - 
