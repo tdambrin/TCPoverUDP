@@ -166,7 +166,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
     // ---------------------- INIT ---------------------
     char* content;
-    float window = 1; //with slow start the window starts to 1...
+    float window = 10; //with slow start the window starts to 1...
     float sstresh = 100; //...and the tresholt takes a first arbitrary great value at the beginning
     char* msg = (char*) malloc(dataSize + seqNsize);
     char* response = (char*) malloc(seqNsize+3);
@@ -218,7 +218,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     int lastMsgSize = filelen - (lastSeqN - initAck)*dataSize;
     printf("lastSEQN = %i\n", lastSeqN);
 
-    window = lastSeqN -initAck;
+    //window = lastSeqN -initAck;
     //Send window first segments
     for (int i = 0; i < window; i++){
         //printf("\n#lastSent: %d\n\n",lastSent);
@@ -365,7 +365,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                     dupAck ++; //WARNING : not necessarly a dup ACK ? (if ack receiving order differs from ack sending order)
                     //printf("Received ACK_%d for the %d time\n",maybeAcked,dupAck);
 
-                    if (dupAck >= 20){ //consider a lost segment
+                    if (dupAck >= 5){ //consider a lost segment
                         //printf("At least 3 dupAcks\n");
                         //printf("flightsize : %d, floor(window) : %f, sent: %d\n",flightSize,floor(window),sent);
 
@@ -471,7 +471,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             gettimeofday(&temp_tv,NULL);
             insertionListeTriee(&sendTimes, lastTransmittedSeqN+1, temp_tv.tv_sec*1000000 + temp_tv.tv_usec);
             gettimeofday(&begin,NULL);
-            if (lastTransmittedSeqN < 30){
+            if (lastTransmittedSeqN > 750){
                 printListe(sendTimes);
             }
             successiveTO++;
