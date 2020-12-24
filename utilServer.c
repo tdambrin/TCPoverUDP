@@ -374,7 +374,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             
             timeout.tv_sec = srtt_sec;
             timeout.tv_usec = srtt_usec;
-            
+            flightSize += 1;
+
             //Fast retransmit
             flightSize = window;
             sstresh = flightSize/2;
