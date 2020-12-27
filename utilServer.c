@@ -216,7 +216,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                 srtt_usec = ALPHA*srtt_usec + (1-ALPHA)*rtt_usec;
                 computeSRTT = 0;
             }
-            timeout.tv_sec = srtt_sec;
+            timeout.tv_sec = 0;
             timeout.tv_usec = srtt_usec;
             
             //-------------------
@@ -236,13 +236,13 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                       //******slowstart
                       if(window < sstresh){
                           printf("\n*slowstart*\n");
-                          //window += maybeAcked - lastTransmittedSeqN;
-                          window += 1;
+                          window += maybeAcked - lastTransmittedSeqN;
+                          //window += 1;
                           //congestion avoidance
                       }else{
                           printf("\n*congestion avoidance*\n");
-                          //window += ( (maybeAcked - lastTransmittedSeqN)/floor(window) );
-                          window += 1;
+                          window += ( (maybeAcked - lastTransmittedSeqN)/floor(window) );
+                          //window += 1;
                       }
                     //*********
 
@@ -372,9 +372,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                 printf("SEG_%i SENT \n",lastTransmittedSeqN+1);
             }
             
-            timeout.tv_sec = srtt_sec;
+            timeout.tv_sec = 0;
             timeout.tv_usec = srtt_usec;
-            flightSize += 1;
 
             //Fast retransmit
             flightSize = window;
