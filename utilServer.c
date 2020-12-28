@@ -25,7 +25,7 @@
 #endif
 
 #ifndef ALPHA
-	#define ALPHA 0.8 //WARNING /!\ discuss about the value
+	#define ALPHA 0.9 //WARNING /!\ discuss about the value
 #endif
 
 void insertionListeTriee(LISTE *pliste, int ackN, long us_time)	
@@ -174,7 +174,6 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     fd_set set;
     struct timeval timeout, start, end, begin, stop, now, temp_tv,fSent; //time after which we consider a segment lost
 
-
     // --------------------- READ FILE ------------------
     FILE* fich = fopen(filename, "r");
     socklen_t clientLen = sizeof(client);
@@ -195,6 +194,11 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     fread(content, 1, filelen, fich);
     fclose(fich);
 
+
+    //DEBUG RTT
+    FILE *rttLog = fopen("rtts.txt","w");
+    FILE *windowLog = fopen("windows.txt","w");
+
     //--------------------------- SEND FILE CONTENT TO CLIENT -----------------
     int sent = -1;
     int successiveTO = 0;
@@ -210,6 +214,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     long srtt_usec = 12000;
     timeout.tv_sec = srtt_sec;
     timeout.tv_usec = srtt_usec;
+
+    int wentToTO = 0;//DEL
 
     gettimeofday(&start, NULL);
     //WARNING : if window greater than total nb of segments 
@@ -247,6 +253,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         //printf("SENT %i bytes | seqN = %i \n", sent, initAck+i);
     }
 
+    int gotFirst = 0;
 
     while (lastTransmittedSeqN < lastSeqN){
     //while (transmitted < filelen){
@@ -254,6 +261,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         FD_SET(sock, &set);
         //printf("timeout : %ld s and %ld us\n", timeout.tv_sec, timeout.tv_usec);
         select(sock+1,&set,NULL,NULL,&timeout);
+        fprintf(windowLog,"%f | %f\n",window,sstresh);//DEL
         if( FD_ISSET(sock,&set) ){
 
             recvdSize = recvfrom(sock, (char*) response, RCVSIZE, MSG_WAITALL, (struct sockaddr*)&client, &clientLen);
@@ -264,6 +272,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
             if (maybeAcked == 1 && lastTransmittedSeqN == initAck -1){
                 gettimeofday(&now, NULL);
+                gotFirst = 1;
             }
 
             //printf("\nACK_%i RCV \n",maybeAcked);
@@ -273,23 +282,27 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                 //Estimation du RTT sur lequel vont se baser les futures estimations du RTT
 	            gettimeofday(&stop,NULL);
                 long rtt_sec, rtt_usec;
-                printf("a\n");
                 while (sendTimes != NULL && sendTimes->seqN < maybeAcked){
-                    printf("c");
+                    printf("supp|");
                     suppHead(&sendTimes);
                 }
-                printf("b\n");
+                printf("asupp\n");
                 long sentTime = suppFirstOcc(&sendTimes,maybeAcked);
                 if (sentTime > 0){
                     printf("removed %i from list\n",maybeAcked);
                     rtt_usec = stop.tv_sec*1000000 + stop.tv_usec - sentTime;
-		            srtt_usec = ALPHA*srtt_usec + (1-ALPHA)*rtt_usec;
+                    long temp = srtt_usec;
+                    srtt_usec = ALPHA*srtt_usec + (1-ALPHA)*rtt_usec;
+                    if (srtt_usec > 2*temp){
+                        srtt_usec = temp;
+                    }
                 }else{
                     printf("no corresponding seqN:%i in sendTimes\n", maybeAcked);
                     //printListe(sendTimes);
                 }
                 timeout.tv_sec = 0;
-                timeout.tv_usec = srtt_usec;
+                timeout.tv_usec = 0.1*srtt_usec;
+                fprintf(rttLog,"%li\n",srtt_usec); //DEL
                 printf("timeout_us=%ld\n",timeout.tv_usec);
                 gettimeofday(&begin,NULL);
 
@@ -400,7 +413,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         }
                         
                         sstresh = flightSize/2;
-                        window = 1;
+                        window = sstresh + dupAck;
                         dupAck = 0;
                     
                     }else{ // not yet considered as a lost segment -> keep sending
@@ -447,8 +460,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         }else{
             //printf("\n#TIMEOUT\n");
             sstresh = flightSize/2;
-            window = 1;
-
+            //window = 1;
+            wentToTO ++;//DEL
             msg[0] = '\0';
 
             intToSeqN(lastTransmittedSeqN + 1, currentSeqN);
@@ -477,15 +490,14 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             successiveTO++;
 
 
-            window = 1;
-            sstresh = flightSize/2;
-            if (successiveTO >= 60){
+            if (successiveTO >= 20){
                 srtt_sec = srtt_sec*1.4;
                 srtt_usec = srtt_usec*1.4;
-                printf("doubled to\n");
+                printf("increased to\n");
             }
+            successiveTO = 0;
             timeout.tv_sec = 0;
-            timeout.tv_usec = srtt_usec;
+            timeout.tv_usec = 0.1*srtt_usec;
         }
     }
 
@@ -508,8 +520,10 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     printf("program ran in %f s  <=> %f Mo/s\n", execTime, filelen/(execTime*1000000));
      
     double fRTT = ((now.tv_sec - fSent.tv_sec)*1000000 + now.tv_usec - fSent.tv_usec);
-    printf("First rtt = %fus, now.tv_usec = %li\n",fRTT, now.tv_usec);
-
+    printf("First rtt = %fus, now.tv_usec = %li, gotFirst = %i\n",fRTT, now.tv_usec, gotFirst);
+    printf("timeouts = %i\n", wentToTO);//DEL
+    fclose(rttLog);//DEL
+    fclose(windowLog);//DEL
     /*sleep(1);
     printf("About to read file\n");
     FILE* recept = fopen("copy_rfc793.pdf", "r");
