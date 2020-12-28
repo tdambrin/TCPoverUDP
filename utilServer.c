@@ -201,21 +201,21 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
     //--------------------------- SEND FILE CONTENT TO CLIENT -----------------
     int sent = -1;
-    int successiveTO = 0;
+    int successiveTO = 0; // number of successive timeout passages
     int transmitted = 0; //nb of bytes sent and acked
     int lastSent = initAck - 1; //seqN of last sent segment
     int lastTransmittedSeqN = initAck - 1; //seqN of last acked segment
     int maybeAcked; //used to store seqN answered by client
     int flightSize = 0;
     int dupAck = 0; 
-    LISTE sendTimes = NULL;
-    char* currentSeqN = (char *) malloc (SEQUENCELEN);
+    LISTE sendTimes = NULL; // used to store the sending instants of packets to compute the rtt
+    char* currentSeqN = (char *) malloc (SEQUENCELEN); //used to temporary store a sequence number
     long srtt_sec = 0; //arbitrary value, this estimator should converge to the real value of rtt
-    long srtt_usec = 12000;
-    timeout.tv_sec = srtt_sec;
+    long srtt_usec = 12000; //rtt estimation in ms
+    timeout.tv_sec = srtt_sec; //will never be used (all will be put in us)
     timeout.tv_usec = srtt_usec;
 
-    int wentToTO = 0;//DEL
+    int wentToTO = 0;//DEL (debug)
 
     gettimeofday(&start, NULL);
     //WARNING : if window greater than total nb of segments 
@@ -460,7 +460,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         }else{
             //printf("\n#TIMEOUT\n");
             sstresh = flightSize/2;
-            //window = 1;
+            //window = 1; seems to reduce performances
             wentToTO ++;//DEL
             msg[0] = '\0';
 
@@ -494,8 +494,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                 srtt_sec = srtt_sec*1.4;
                 srtt_usec = srtt_usec*1.4;
                 printf("increased to\n");
+                successiveTO = 0;
             }
-            successiveTO = 0;
             timeout.tv_sec = 0;
             timeout.tv_usec = 0.1*srtt_usec;
         }
