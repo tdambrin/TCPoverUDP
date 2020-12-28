@@ -5,3 +5,6 @@ mean.py
 *.png
 *.jpeg
 *.jpg
+*.py
+*.swp
+*.log
