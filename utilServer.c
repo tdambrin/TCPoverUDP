@@ -236,13 +236,13 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                       //******slowstart
                       if(window < sstresh){
                           printf("\n*slowstart*\n");
-                          window += maybeAcked - lastTransmittedSeqN;
-                          //window += 1;
+                          //window += maybeAcked - lastTransmittedSeqN;
+                          window += 1;
                           //congestion avoidance
                       }else{
                           printf("\n*congestion avoidance*\n");
-                          window += ( (maybeAcked - lastTransmittedSeqN)/floor(window) );
-                          //window += 1;
+                          //window += ( (maybeAcked - lastTransmittedSeqN)/floor(window) );
+                          window += 1/floor(window);
                       }
                     //*********
 
@@ -347,6 +347,18 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                     }
                 }else{
                     printf("Received an inferior ack -> ignored \n");
+                    //******slowstart
+                      if(window < sstresh){
+                          printf("\n*slowstart*\n");
+                          //window += maybeAcked - lastTransmittedSeqN;
+                          window += 1;
+                          //congestion avoidance
+                      }else{
+                          printf("\n*congestion avoidance*\n");
+                          //window += ( (maybeAcked - lastTransmittedSeqN)/floor(window) );
+                          window += 1/floor(window);
+                      }
+                    //*********
                     
                 }
                 printf("\n SRTT : \n %ld sec.\n %ld usec.\n\n",srtt_sec,srtt_usec);

@@ -1,0 +1,5638 @@
+Port = 7890, 2568
+SYN
+FILE OPENED: rfc793.pdf
+
+#lastSent: 0
+
+i:0,window 1.000000
+
+SEG_1 SENT 
+lastSEQN = 153
+window = 1.000000 | flightsize = 1 | sstresh = 100.000000
+
+
+ACK_1 RCV 
+normal ACK
+*slowstart*
+SEG_2 SENT 
+
+ SRTT : 
+ 1 sec.
+ 2204 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 100.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 2
+SEG_2 SENT 
+
+ SRTT : 
+ 1 sec.
+ 2204 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 2
+SEG_2 SENT 
+
+ SRTT : 
+ 1 sec.
+ 2204 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_2 RCV 
+normal ACK
+*congestion avoidance*
+SEG_3 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3510 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_2 RCV 
+dupackReceived ACK_2 for the 1 time
+SEG_4 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3014 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_2 RCV 
+dupackReceived ACK_2 for the 2 time
+SEG_5 SENT 
+
+ SRTT : 
+ 0 sec.
+ 2734 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_3 RCV 
+normal ACK
+*congestion avoidance*
+SEG_6 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1920 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 4
+SEG_4 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1920 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_4 RCV 
+normal ACK
+*congestion avoidance*
+SEG_7 SENT 
+
+ SRTT : 
+ 0 sec.
+ 2059 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 5
+SEG_5 SENT 
+
+ SRTT : 
+ 0 sec.
+ 2059 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_5 RCV 
+normal ACK
+*congestion avoidance*
+SEG_8 SENT 
+
+ SRTT : 
+ 0 sec.
+ 2171 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_6 RCV 
+normal ACK
+*congestion avoidance*
+SEG_9 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1571 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 7
+SEG_7 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1571 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_6 RCV 
+dupackReceived ACK_6 for the 1 time
+SEG_10 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1759 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_7 RCV 
+normal ACK
+*congestion avoidance*
+SEG_11 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1080 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 8
+SEG_8 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1080 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_7 RCV 
+dupackReceived ACK_7 for the 1 time
+SEG_12 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1552 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_8 RCV 
+normal ACK
+*congestion avoidance*
+SEG_13 SENT 
+
+ SRTT : 
+ 0 sec.
+ 958 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_9 RCV 
+normal ACK
+*congestion avoidance*
+SEG_14 SENT 
+
+ SRTT : 
+ 0 sec.
+ 871 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 10
+SEG_10 SENT 
+
+ SRTT : 
+ 0 sec.
+ 871 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_9 RCV 
+dupackReceived ACK_9 for the 1 time
+SEG_15 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1180 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_10 RCV 
+normal ACK
+*congestion avoidance*
+SEG_16 SENT 
+
+ SRTT : 
+ 0 sec.
+ 860 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_11 RCV 
+normal ACK
+*congestion avoidance*
+SEG_17 SENT 
+
+ SRTT : 
+ 0 sec.
+ 545 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 12
+SEG_12 SENT 
+
+ SRTT : 
+ 0 sec.
+ 545 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_11 RCV 
+dupackReceived ACK_11 for the 1 time
+SEG_18 SENT 
+
+ SRTT : 
+ 0 sec.
+ 791 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 12
+SEG_12 SENT 
+
+ SRTT : 
+ 0 sec.
+ 791 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_12 RCV 
+normal ACK
+*congestion avoidance*
+SEG_19 SENT 
+
+ SRTT : 
+ 0 sec.
+ 892 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_13 RCV 
+normal ACK
+*congestion avoidance*
+SEG_20 SENT 
+
+ SRTT : 
+ 0 sec.
+ 588 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_14 RCV 
+normal ACK
+*congestion avoidance*
+SEG_21 SENT 
+
+ SRTT : 
+ 0 sec.
+ 603 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 15
+SEG_15 SENT 
+
+ SRTT : 
+ 0 sec.
+ 603 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_14 RCV 
+dupackReceived ACK_14 for the 1 time
+SEG_22 SENT 
+
+ SRTT : 
+ 0 sec.
+ 752 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_15 RCV 
+normal ACK
+*congestion avoidance*
+SEG_23 SENT 
+
+ SRTT : 
+ 0 sec.
+ 719 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_16 RCV 
+normal ACK
+*congestion avoidance*
+SEG_24 SENT 
+
+ SRTT : 
+ 0 sec.
+ 589 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_17 RCV 
+normal ACK
+*congestion avoidance*
+SEG_25 SENT 
+
+ SRTT : 
+ 0 sec.
+ 388 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 18
+SEG_18 SENT 
+
+ SRTT : 
+ 0 sec.
+ 388 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_17 RCV 
+dupackReceived ACK_17 for the 1 time
+SEG_26 SENT 
+
+ SRTT : 
+ 0 sec.
+ 470 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 18
+SEG_18 SENT 
+
+ SRTT : 
+ 0 sec.
+ 470 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_18 RCV 
+normal ACK
+*congestion avoidance*
+SEG_27 SENT 
+
+ SRTT : 
+ 0 sec.
+ 506 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 19
+SEG_19 SENT 
+
+ SRTT : 
+ 0 sec.
+ 506 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_18 RCV 
+dupackReceived ACK_18 for the 1 time
+SEG_28 SENT 
+
+ SRTT : 
+ 0 sec.
+ 629 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_19 RCV 
+normal ACK
+*congestion avoidance*
+SEG_29 SENT 
+
+ SRTT : 
+ 0 sec.
+ 468 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_20 RCV 
+normal ACK
+*congestion avoidance*
+SEG_30 SENT 
+
+ SRTT : 
+ 0 sec.
+ 364 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 21
+SEG_21 SENT 
+
+ SRTT : 
+ 0 sec.
+ 364 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 21
+SEG_21 SENT 
+
+ SRTT : 
+ 0 sec.
+ 364 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_20 RCV 
+dupackReceived ACK_20 for the 1 time
+SEG_31 SENT 
+
+ SRTT : 
+ 0 sec.
+ 728 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_20 RCV 
+dupackReceived ACK_20 for the 2 time
+SEG_32 SENT 
+
+ SRTT : 
+ 0 sec.
+ 534 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 21
+SEG_21 SENT 
+
+ SRTT : 
+ 0 sec.
+ 534 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 21
+SEG_21 SENT 
+
+ SRTT : 
+ 0 sec.
+ 534 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 21
+SEG_21 SENT 
+
+ SRTT : 
+ 0 sec.
+ 534 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 21
+SEG_21 SENT 
+
+ SRTT : 
+ 0 sec.
+ 534 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_20 RCV 
+dupackReceived ACK_20 for the 3 time
+At least 3 dupAcks
+SEG_21 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1524 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_20 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 994 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_20 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 994 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_20 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 994 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_22 RCV 
+normal ACK
+*congestion avoidance*
+SEG_33 SENT 
+
+ SRTT : 
+ 0 sec.
+ 994 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_22 RCV 
+dupackReceived ACK_22 for the 1 time
+SEG_34 SENT 
+
+ SRTT : 
+ 0 sec.
+ 666 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_22 RCV 
+dupackReceived ACK_22 for the 2 time
+SEG_35 SENT 
+
+ SRTT : 
+ 0 sec.
+ 570 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_22 RCV 
+dupackReceived ACK_22 for the 3 time
+At least 3 dupAcks
+SEG_23 SENT 
+
+ SRTT : 
+ 0 sec.
+ 433 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 23
+SEG_23 SENT 
+
+ SRTT : 
+ 0 sec.
+ 433 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_22 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 572 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_22 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 572 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 23
+SEG_23 SENT 
+
+ SRTT : 
+ 0 sec.
+ 572 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_22 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 572 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_22 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 572 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_22 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 572 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 23
+SEG_23 SENT 
+
+ SRTT : 
+ 0 sec.
+ 572 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 23
+SEG_23 SENT 
+
+ SRTT : 
+ 0 sec.
+ 572 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_22 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 572 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_22 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 572 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_22 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 572 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_23 RCV 
+normal ACK
+*congestion avoidance*
+SEG_36 SENT 
+
+ SRTT : 
+ 0 sec.
+ 572 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 24
+SEG_24 SENT 
+
+ SRTT : 
+ 0 sec.
+ 572 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 24
+SEG_24 SENT 
+
+ SRTT : 
+ 0 sec.
+ 572 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 24
+SEG_24 SENT 
+
+ SRTT : 
+ 0 sec.
+ 572 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 24
+SEG_24 SENT 
+
+ SRTT : 
+ 0 sec.
+ 572 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_23 RCV 
+dupackReceived ACK_23 for the 1 time
+SEG_37 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1804 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_23 RCV 
+dupackReceived ACK_23 for the 2 time
+SEG_38 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1326 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_23 RCV 
+dupackReceived ACK_23 for the 3 time
+At least 3 dupAcks
+SEG_24 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1211 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_24 RCV 
+normal ACK
+*congestion avoidance*
+SEG_39 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1171 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_24 RCV 
+dupackReceived ACK_24 for the 1 time
+SEG_40 SENT 
+
+ SRTT : 
+ 0 sec.
+ 991 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_24 RCV 
+dupackReceived ACK_24 for the 2 time
+SEG_41 SENT 
+
+ SRTT : 
+ 0 sec.
+ 814 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 25
+SEG_25 SENT 
+
+ SRTT : 
+ 0 sec.
+ 814 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 25
+SEG_25 SENT 
+
+ SRTT : 
+ 0 sec.
+ 814 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_24 RCV 
+dupackReceived ACK_24 for the 3 time
+At least 3 dupAcks
+SEG_25 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1215 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_24 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1143 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_24 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1143 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_24 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1143 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_24 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1143 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_25 RCV 
+normal ACK
+*congestion avoidance*
+SEG_42 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1143 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_25 RCV 
+dupackReceived ACK_25 for the 1 time
+SEG_43 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1097 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 26
+SEG_26 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1097 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 26
+SEG_26 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1097 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 26
+SEG_26 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1097 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_25 RCV 
+dupackReceived ACK_25 for the 2 time
+SEG_44 SENT 
+
+ SRTT : 
+ 0 sec.
+ 2362 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_25 RCV 
+dupackReceived ACK_25 for the 3 time
+At least 3 dupAcks
+SEG_26 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1818 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_26 RCV 
+normal ACK
+*congestion avoidance*
+SEG_45 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1675 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_26 RCV 
+dupackReceived ACK_26 for the 1 time
+SEG_46 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1399 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_26 RCV 
+dupackReceived ACK_26 for the 2 time
+SEG_47 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1283 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_26 RCV 
+dupackReceived ACK_26 for the 3 time
+At least 3 dupAcks
+SEG_27 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1009 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_26 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1021 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 27
+SEG_27 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1021 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_26 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1021 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_26 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1021 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_26 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1021 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_36 RCV 
+normal ACK
+*congestion avoidance*
+SEG_48 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1021 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 37
+SEG_37 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1021 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_36 RCV 
+dupackReceived ACK_36 for the 1 time
+SEG_49 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1428 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 37
+SEG_37 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1428 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 37
+SEG_37 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1428 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_36 RCV 
+dupackReceived ACK_36 for the 2 time
+SEG_50 SENT 
+
+ SRTT : 
+ 0 sec.
+ 2143 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_48 RCV 
+normal ACK
+*congestion avoidance*
+SEG_51 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1754 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_49 RCV 
+normal ACK
+*congestion avoidance*
+SEG_52 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1405 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 50
+SEG_50 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1405 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_49 RCV 
+dupackReceived ACK_49 for the 1 time
+SEG_53 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1496 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_49 RCV 
+dupackReceived ACK_49 for the 2 time
+SEG_54 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1507 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_50 RCV 
+normal ACK
+*congestion avoidance*
+SEG_55 SENT 
+
+ SRTT : 
+ 0 sec.
+ 930 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 51
+SEG_51 SENT 
+
+ SRTT : 
+ 0 sec.
+ 930 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_51 RCV 
+normal ACK
+*congestion avoidance*
+SEG_56 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1000 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_52 RCV 
+normal ACK
+*congestion avoidance*
+SEG_57 SENT 
+
+ SRTT : 
+ 0 sec.
+ 977 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 53
+SEG_53 SENT 
+
+ SRTT : 
+ 0 sec.
+ 977 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 53
+SEG_53 SENT 
+
+ SRTT : 
+ 0 sec.
+ 977 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_53 RCV 
+normal ACK
+*congestion avoidance*
+SEG_58 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1834 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_53 RCV 
+dupackReceived ACK_53 for the 1 time
+SEG_59 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1556 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_53 RCV 
+dupackReceived ACK_53 for the 2 time
+SEG_60 SENT 
+
+ SRTT : 
+ 0 sec.
+ 971 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_53 RCV 
+dupackReceived ACK_53 for the 3 time
+At least 3 dupAcks
+SEG_54 SENT 
+
+ SRTT : 
+ 0 sec.
+ 968 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_53 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 967 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 54
+SEG_54 SENT 
+
+ SRTT : 
+ 0 sec.
+ 967 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_53 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 967 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_53 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 967 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_53 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 967 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_53 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 967 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_60 RCV 
+normal ACK
+*congestion avoidance*
+SEG_61 SENT 
+
+ SRTT : 
+ 0 sec.
+ 967 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 61
+SEG_61 SENT 
+
+ SRTT : 
+ 0 sec.
+ 967 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_60 RCV 
+dupackReceived ACK_60 for the 1 time
+SEG_62 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1397 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 61
+SEG_61 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1397 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 61
+SEG_61 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1397 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_61 RCV 
+normal ACK
+*congestion avoidance*
+SEG_63 SENT 
+
+ SRTT : 
+ 0 sec.
+ 2169 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_61 RCV 
+dupackReceived ACK_61 for the 1 time
+SEG_64 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1757 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_62 RCV 
+normal ACK
+*congestion avoidance*
+SEG_65 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1371 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 63
+SEG_63 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1371 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_62 RCV 
+dupackReceived ACK_62 for the 1 time
+SEG_66 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1435 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_62 RCV 
+dupackReceived ACK_62 for the 2 time
+SEG_67 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1444 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_63 RCV 
+normal ACK
+*congestion avoidance*
+SEG_68 SENT 
+
+ SRTT : 
+ 0 sec.
+ 958 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 64
+SEG_64 SENT 
+
+ SRTT : 
+ 0 sec.
+ 958 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_64 RCV 
+normal ACK
+*congestion avoidance*
+SEG_69 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1038 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_65 RCV 
+normal ACK
+*congestion avoidance*
+SEG_70 SENT 
+
+ SRTT : 
+ 0 sec.
+ 944 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 66
+SEG_66 SENT 
+
+ SRTT : 
+ 0 sec.
+ 944 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_65 RCV 
+dupackReceived ACK_65 for the 1 time
+SEG_71 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1143 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_66 RCV 
+normal ACK
+*congestion avoidance*
+SEG_72 SENT 
+
+ SRTT : 
+ 0 sec.
+ 805 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 67
+SEG_67 SENT 
+
+ SRTT : 
+ 0 sec.
+ 805 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_67 RCV 
+normal ACK
+*congestion avoidance*
+SEG_73 SENT 
+
+ SRTT : 
+ 0 sec.
+ 962 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_68 RCV 
+normal ACK
+*congestion avoidance*
+SEG_74 SENT 
+
+ SRTT : 
+ 0 sec.
+ 677 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 69
+SEG_69 SENT 
+
+ SRTT : 
+ 0 sec.
+ 677 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_68 RCV 
+dupackReceived ACK_68 for the 1 time
+SEG_75 SENT 
+
+ SRTT : 
+ 0 sec.
+ 801 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_69 RCV 
+normal ACK
+*congestion avoidance*
+SEG_76 SENT 
+
+ SRTT : 
+ 0 sec.
+ 531 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 70
+SEG_70 SENT 
+
+ SRTT : 
+ 0 sec.
+ 531 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_70 RCV 
+normal ACK
+*congestion avoidance*
+SEG_77 SENT 
+
+ SRTT : 
+ 0 sec.
+ 632 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 71
+SEG_71 SENT 
+
+ SRTT : 
+ 0 sec.
+ 632 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 71
+SEG_71 SENT 
+
+ SRTT : 
+ 0 sec.
+ 632 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_72 RCV 
+normal ACK
+*congestion avoidance*
+SEG_78 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1095 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_71 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1035 usec.
+
+window = 0.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_72 RCV 
+dupackReceived ACK_72 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 1035 usec.
+
+window = 0.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_70 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1035 usec.
+
+window = -inf | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_73 RCV 
+normal ACK
+*slowstart*
+
+ SRTT : 
+ 0 sec.
+ 1035 usec.
+
+window = -inf | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 74
+SEG_74 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1035 usec.
+
+window = 1.000000 | flightsize = -2147483648 | sstresh = -1073741824.000000
+
+
+ACK_75 RCV 
+normal ACK
+*congestion avoidance*
+SEG_79 SENT 
+SEG_80 SENT 
+SEG_81 SENT 
+SEG_82 SENT 
+SEG_83 SENT 
+SEG_84 SENT 
+SEG_85 SENT 
+SEG_86 SENT 
+SEG_87 SENT 
+SEG_88 SENT 
+SEG_89 SENT 
+SEG_90 SENT 
+SEG_91 SENT 
+SEG_92 SENT 
+SEG_93 SENT 
+SEG_94 SENT 
+SEG_95 SENT 
+SEG_96 SENT 
+SEG_97 SENT 
+SEG_98 SENT 
+SEG_99 SENT 
+SEG_100 SENT 
+SEG_101 SENT 
+SEG_102 SENT 
+SEG_103 SENT 
+SEG_104 SENT 
+SEG_105 SENT 
+SEG_106 SENT 
+SEG_107 SENT 
+SEG_108 SENT 
+SEG_109 SENT 
+SEG_110 SENT 
+SEG_111 SENT 
+SEG_112 SENT 
+SEG_113 SENT 
+SEG_114 SENT 
+SEG_115 SENT 
+SEG_116 SENT 
+SEG_117 SENT 
+SEG_118 SENT 
+SEG_119 SENT 
+SEG_120 SENT 
+SEG_121 SENT 
+SEG_122 SENT 
+SEG_123 SENT 
+SEG_124 SENT 
+SEG_125 SENT 
+SEG_126 SENT 
+SEG_127 SENT 
+SEG_128 SENT 
+SEG_129 SENT 
+SEG_130 SENT 
+SEG_131 SENT 
+SEG_132 SENT 
+SEG_133 SENT 
+SEG_134 SENT 
+SEG_135 SENT 
+SEG_136 SENT 
+SEG_137 SENT 
+SEG_138 SENT 
+SEG_139 SENT 
+SEG_140 SENT 
+SEG_141 SENT 
+SEG_142 SENT 
+SEG_143 SENT 
+SEG_144 SENT 
+SEG_145 SENT 
+SEG_146 SENT 
+SEG_147 SENT 
+SEG_148 SENT 
+SEG_149 SENT 
+SEG_150 SENT 
+SEG_151 SENT 
+SEG_152 SENT 
+SEG_153 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1035 usec.
+
+window = 1.000000 | flightsize = -2147483573 | sstresh = -1073741824.000000
+
+
+ACK_76 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = -2147483573 | sstresh = -1073741824.000000
+
+
+ACK_76 RCV 
+dupackReceived ACK_76 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = -2147483573 | sstresh = -1073741824.000000
+
+
+ACK_77 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = -2147483573 | sstresh = -1073741824.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 78
+SEG_78 SENT 
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_77 RCV 
+dupackReceived ACK_77 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_77 RCV 
+dupackReceived ACK_77 for the 2 time
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_78 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 79
+SEG_79 SENT 
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 79
+SEG_79 SENT 
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_78 RCV 
+dupackReceived ACK_78 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_79 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_79 RCV 
+dupackReceived ACK_79 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_79 RCV 
+dupackReceived ACK_79 for the 2 time
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 80
+SEG_80 SENT 
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 80
+SEG_80 SENT 
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 80
+SEG_80 SENT 
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 80
+SEG_80 SENT 
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 80
+SEG_80 SENT 
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 80
+SEG_80 SENT 
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 80
+SEG_80 SENT 
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 80
+SEG_80 SENT 
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_80 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 81
+SEG_81 SENT 
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_80 RCV 
+dupackReceived ACK_80 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 81
+SEG_81 SENT 
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_80 RCV 
+dupackReceived ACK_80 for the 2 time
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_80 RCV 
+dupackReceived ACK_80 for the 3 time
+At least 3 dupAcks
+SEG_81 SENT 
+
+ SRTT : 
+ 0 sec.
+ 961 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_80 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 983 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 81
+SEG_81 SENT 
+
+ SRTT : 
+ 0 sec.
+ 983 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_81 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 983 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_81 RCV 
+dupackReceived ACK_81 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 983 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 82
+SEG_82 SENT 
+
+ SRTT : 
+ 0 sec.
+ 983 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_81 RCV 
+dupackReceived ACK_81 for the 2 time
+
+ SRTT : 
+ 0 sec.
+ 983 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 82
+SEG_82 SENT 
+
+ SRTT : 
+ 0 sec.
+ 983 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_81 RCV 
+dupackReceived ACK_81 for the 3 time
+At least 3 dupAcks
+SEG_82 SENT 
+
+ SRTT : 
+ 0 sec.
+ 983 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 82
+SEG_82 SENT 
+
+ SRTT : 
+ 0 sec.
+ 983 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 82
+SEG_82 SENT 
+
+ SRTT : 
+ 0 sec.
+ 983 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_82 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1849 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_82 RCV 
+dupackReceived ACK_82 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 1849 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_82 RCV 
+dupackReceived ACK_82 for the 2 time
+
+ SRTT : 
+ 0 sec.
+ 1849 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_82 RCV 
+dupackReceived ACK_82 for the 3 time
+At least 3 dupAcks
+SEG_83 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1849 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_82 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 83
+SEG_83 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 83
+SEG_83 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_83 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 84
+SEG_84 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 84
+SEG_84 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_83 RCV 
+dupackReceived ACK_83 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 84
+SEG_84 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_84 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 85
+SEG_85 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_84 RCV 
+dupackReceived ACK_84 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 85
+SEG_85 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_84 RCV 
+dupackReceived ACK_84 for the 2 time
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 85
+SEG_85 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_85 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 86
+SEG_86 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_85 RCV 
+dupackReceived ACK_85 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 86
+SEG_86 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_85 RCV 
+dupackReceived ACK_85 for the 2 time
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 86
+SEG_86 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_86 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 87
+SEG_87 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_86 RCV 
+dupackReceived ACK_86 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 87
+SEG_87 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_86 RCV 
+dupackReceived ACK_86 for the 2 time
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 87
+SEG_87 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_87 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 88
+SEG_88 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_87 RCV 
+dupackReceived ACK_87 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 88
+SEG_88 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_87 RCV 
+dupackReceived ACK_87 for the 2 time
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 88
+SEG_88 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_88 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 89
+SEG_89 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_88 RCV 
+dupackReceived ACK_88 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 89
+SEG_89 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_88 RCV 
+dupackReceived ACK_88 for the 2 time
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 89
+SEG_89 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_89 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 90
+SEG_90 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_89 RCV 
+dupackReceived ACK_89 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 90
+SEG_90 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_89 RCV 
+dupackReceived ACK_89 for the 2 time
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 90
+SEG_90 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_90 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 91
+SEG_91 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_90 RCV 
+dupackReceived ACK_90 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 91
+SEG_91 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 91
+SEG_91 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 91
+SEG_91 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_91 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 92
+SEG_92 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_91 RCV 
+dupackReceived ACK_91 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 92
+SEG_92 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_91 RCV 
+dupackReceived ACK_91 for the 2 time
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 92
+SEG_92 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_91 RCV 
+dupackReceived ACK_91 for the 3 time
+At least 3 dupAcks
+SEG_92 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 92
+SEG_92 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1526 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_92 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1694 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 93
+SEG_93 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1694 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_92 RCV 
+dupackReceived ACK_92 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 1694 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_92 RCV 
+dupackReceived ACK_92 for the 2 time
+
+ SRTT : 
+ 0 sec.
+ 1694 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_92 RCV 
+dupackReceived ACK_92 for the 3 time
+At least 3 dupAcks
+SEG_93 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1694 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_92 RCV 
+Received an inferior ack -> ignored 
+
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 93
+SEG_93 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 93
+SEG_93 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 93
+SEG_93 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_93 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 94
+SEG_94 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_93 RCV 
+dupackReceived ACK_93 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_93 RCV 
+dupackReceived ACK_93 for the 2 time
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 94
+SEG_94 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_94 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 95
+SEG_95 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 95
+SEG_95 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_94 RCV 
+dupackReceived ACK_94 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 95
+SEG_95 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_96 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_96 RCV 
+dupackReceived ACK_96 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 97
+SEG_97 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_96 RCV 
+dupackReceived ACK_96 for the 2 time
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 97
+SEG_97 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 97
+SEG_97 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_97 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 98
+SEG_98 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 98
+SEG_98 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_97 RCV 
+dupackReceived ACK_97 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 98
+SEG_98 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_98 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 99
+SEG_99 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_98 RCV 
+dupackReceived ACK_98 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 99
+SEG_99 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_98 RCV 
+dupackReceived ACK_98 for the 2 time
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 99
+SEG_99 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_99 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 100
+SEG_100 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_99 RCV 
+dupackReceived ACK_99 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 100
+SEG_100 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_99 RCV 
+dupackReceived ACK_99 for the 2 time
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 100
+SEG_100 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_100 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 101
+SEG_101 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_100 RCV 
+dupackReceived ACK_100 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 101
+SEG_101 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_100 RCV 
+dupackReceived ACK_100 for the 2 time
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 101
+SEG_101 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 101
+SEG_101 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_101 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_101 RCV 
+dupackReceived ACK_101 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 102
+SEG_102 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_101 RCV 
+dupackReceived ACK_101 for the 2 time
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 102
+SEG_102 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_101 RCV 
+dupackReceived ACK_101 for the 3 time
+At least 3 dupAcks
+SEG_102 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 102
+SEG_102 SENT 
+
+ SRTT : 
+ 0 sec.
+ 1732 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_102 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 2428 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_102 RCV 
+dupackReceived ACK_102 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 2428 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_102 RCV 
+dupackReceived ACK_102 for the 2 time
+
+ SRTT : 
+ 0 sec.
+ 2428 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_102 RCV 
+dupackReceived ACK_102 for the 3 time
+At least 3 dupAcks
+SEG_103 SENT 
+
+ SRTT : 
+ 0 sec.
+ 2428 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 103
+SEG_103 SENT 
+
+ SRTT : 
+ 0 sec.
+ 2428 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 103
+SEG_103 SENT 
+
+ SRTT : 
+ 0 sec.
+ 2428 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_103 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_103 RCV 
+dupackReceived ACK_103 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 104
+SEG_104 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 104
+SEG_104 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_104 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 105
+SEG_105 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_104 RCV 
+dupackReceived ACK_104 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 105
+SEG_105 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_105 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 106
+SEG_106 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_105 RCV 
+dupackReceived ACK_105 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 106
+SEG_106 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_106 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 107
+SEG_107 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_106 RCV 
+dupackReceived ACK_106 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 107
+SEG_107 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_107 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 108
+SEG_108 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_107 RCV 
+dupackReceived ACK_107 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 108
+SEG_108 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_108 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 109
+SEG_109 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_108 RCV 
+dupackReceived ACK_108 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 109
+SEG_109 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_109 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 110
+SEG_110 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_109 RCV 
+dupackReceived ACK_109 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 110
+SEG_110 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_110 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 111
+SEG_111 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_110 RCV 
+dupackReceived ACK_110 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 111
+SEG_111 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_111 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 112
+SEG_112 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_111 RCV 
+dupackReceived ACK_111 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 112
+SEG_112 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_112 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 113
+SEG_113 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_112 RCV 
+dupackReceived ACK_112 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 113
+SEG_113 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_113 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 114
+SEG_114 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_113 RCV 
+dupackReceived ACK_113 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 114
+SEG_114 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_114 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 115
+SEG_115 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_114 RCV 
+dupackReceived ACK_114 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 115
+SEG_115 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_115 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 116
+SEG_116 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_115 RCV 
+dupackReceived ACK_115 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 116
+SEG_116 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_116 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 117
+SEG_117 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_116 RCV 
+dupackReceived ACK_116 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 117
+SEG_117 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_117 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 118
+SEG_118 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_117 RCV 
+dupackReceived ACK_117 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 118
+SEG_118 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_118 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 119
+SEG_119 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_118 RCV 
+dupackReceived ACK_118 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 119
+SEG_119 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_119 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 120
+SEG_120 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_119 RCV 
+dupackReceived ACK_119 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 120
+SEG_120 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_120 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 121
+SEG_121 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_120 RCV 
+dupackReceived ACK_120 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 121
+SEG_121 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_121 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 122
+SEG_122 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_121 RCV 
+dupackReceived ACK_121 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 122
+SEG_122 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_122 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 123
+SEG_123 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_122 RCV 
+dupackReceived ACK_122 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 123
+SEG_123 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_123 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 124
+SEG_124 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_123 RCV 
+dupackReceived ACK_123 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 124
+SEG_124 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_124 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+ACK_124 RCV 
+dupackReceived ACK_124 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 125
+SEG_125 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 125
+SEG_125 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_125 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 126
+SEG_126 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_125 RCV 
+dupackReceived ACK_125 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 126
+SEG_126 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_126 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 127
+SEG_127 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 127
+SEG_127 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 127
+SEG_127 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_127 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 128
+SEG_128 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_127 RCV 
+dupackReceived ACK_127 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 128
+SEG_128 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_128 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 129
+SEG_129 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_128 RCV 
+dupackReceived ACK_128 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 129
+SEG_129 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_129 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 130
+SEG_130 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_129 RCV 
+dupackReceived ACK_129 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 130
+SEG_130 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_130 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 131
+SEG_131 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_130 RCV 
+dupackReceived ACK_130 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 131
+SEG_131 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_131 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 132
+SEG_132 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_131 RCV 
+dupackReceived ACK_131 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 132
+SEG_132 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_132 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 133
+SEG_133 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_132 RCV 
+dupackReceived ACK_132 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 133
+SEG_133 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_133 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 134
+SEG_134 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_133 RCV 
+dupackReceived ACK_133 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 134
+SEG_134 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_134 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 135
+SEG_135 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_134 RCV 
+dupackReceived ACK_134 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 135
+SEG_135 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_135 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 136
+SEG_136 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_135 RCV 
+dupackReceived ACK_135 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 136
+SEG_136 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_136 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 137
+SEG_137 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_136 RCV 
+dupackReceived ACK_136 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 137
+SEG_137 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_138 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 139
+SEG_139 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_138 RCV 
+dupackReceived ACK_138 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 139
+SEG_139 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_139 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 140
+SEG_140 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_139 RCV 
+dupackReceived ACK_139 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 140
+SEG_140 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_140 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 141
+SEG_141 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_140 RCV 
+dupackReceived ACK_140 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 141
+SEG_141 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_141 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 142
+SEG_142 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_141 RCV 
+dupackReceived ACK_141 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 142
+SEG_142 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_142 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 143
+SEG_143 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_142 RCV 
+dupackReceived ACK_142 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 143
+SEG_143 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_143 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 144
+SEG_144 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_143 RCV 
+dupackReceived ACK_143 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 144
+SEG_144 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_144 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 145
+SEG_145 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_144 RCV 
+dupackReceived ACK_144 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 145
+SEG_145 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_145 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 146
+SEG_146 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_145 RCV 
+dupackReceived ACK_145 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 146
+SEG_146 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_146 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 147
+SEG_147 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_146 RCV 
+dupackReceived ACK_146 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 147
+SEG_147 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_147 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 148
+SEG_148 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_147 RCV 
+dupackReceived ACK_147 for the 1 time
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 148
+SEG_148 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.000000
+
+
+ACK_148 RCV 
+normal ACK
+*congestion avoidance*
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 0 | sstresh = 0.000000
+
+
+#TIMEOUT
+about to send from timeout, lastTransmitted = 149
+SEG_149 SENT 
+
+ SRTT : 
+ 0 sec.
+ 3606 usec.
+
+window = 1.000000 | flightsize = 1 | sstresh = 0.00000
