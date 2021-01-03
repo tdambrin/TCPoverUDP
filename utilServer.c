@@ -199,7 +199,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         select(sock+1,&set,NULL,NULL,&timeout);
         
         printf("window = %f | flightsize = %d | sstresh = %f\n\n",window,flightSize,sstresh);
-        fprintf(log,"window : %f | sstresh : %f | flightsize : %d\n",window,sstresh, flightSize);
+        fprintf(log,"window : %f | sstresh : %f | flightsize : %f\n",window,sstresh, flightSize);
         if( FD_ISSET(sock,&set) ){
 
             recvdSize = recvfrom(sock, (char*) response, RCVSIZE, MSG_WAITALL, (struct sockaddr*)&client, &clientLen);
