@@ -198,7 +198,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         FD_SET(sock, &set);
         select(sock+1,&set,NULL,NULL,&timeout);
         
-        printf("window = %f | flightsize = %d | sstresh = %f\n\n",window,flightSize,sstresh);
+        printf("window = %f | flightsize : %f | sstresh = %f\n\n",window,flightSize,sstresh);
         fprintf(log,"window : %f | sstresh : %f | flightsize : %f\n",window,sstresh, flightSize);
         if( FD_ISSET(sock,&set) ){
 
