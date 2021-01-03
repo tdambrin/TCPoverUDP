@@ -105,6 +105,7 @@ int seqNToInt(char *seqNumber){
 int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dataSize, int seqNsize, int initAck){
                         //WARNING FOR LATER : handle sending of more content than existing
 
+    FILE* log = fopen("log.txt", "w");
 
     // ---------------------- INIT ---------------------
     char* content;
@@ -145,7 +146,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     int lastSent = initAck - 1; //seqN of last sent segment
     int lastTransmittedSeqN = initAck - 1; //seqN of last acked segment
     int maybeAcked; //used to store seqN answered by client
-    int flightSize = 0;
+    float flightSize = 0;
     int dupAck = 0; 
     char* currentSeqN = (char *) malloc (SEQUENCELEN);
     long srtt_sec = 2; //arbitrary value, this estimator should converge to the real value of rtt_sec
@@ -198,7 +199,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         select(sock+1,&set,NULL,NULL,&timeout);
         
         printf("window = %f | flightsize = %d | sstresh = %f\n\n",window,flightSize,sstresh);
-
+        fprintf(log,"window : %f | sstresh : %f | flightsize : %d\n",window,sstresh, flightSize);
         if( FD_ISSET(sock,&set) ){
 
             recvdSize = recvfrom(sock, (char*) response, RCVSIZE, MSG_WAITALL, (struct sockaddr*)&client, &clientLen);
@@ -310,8 +311,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             gettimeofday(&begin,NULL);
                         }
                         
-                        sstresh = flightSize/2;
-                        window = 1;
+                        sstresh = ceilf(flightSize/2);
+                        window = sstresh + dupAck;
                         dupAck = 0;
                     
                     }else{ // not yet considered as a lost segment -> keep sending
@@ -367,6 +368,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         //TIMEOUT : segment lost
         }else{
             printf("\n#TIMEOUT\n");
+            fprintf(log,"#TIMEOUT\n");
 
             msg[0] = '\0';
             intToSeqN(lastTransmittedSeqN + 1, currentSeqN);
@@ -389,7 +391,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
             //Fast retransmit
             flightSize = window;
-            sstresh = flightSize/2;
+            sstresh = ceilf(flightSize/2);
             window = 1;
             printf("\n SRTT : \n %ld sec.\n %ld usec.\n\n",srtt_sec,srtt_usec);
         }
@@ -406,7 +408,6 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     }
 
     printf("FILE CONTENT FULLY TRANSMITTED, sent endMsg = %s\n", endMsg);
-
     //free(content);
 
     gettimeofday(&end,NULL);
@@ -414,7 +415,6 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     long micros = (seconds*1000000 + end.tv_usec - start.tv_usec);
     printf("\n-------------------\nPROGRAM RAN IN :\n %ld s and %ld us \nwith window = %f\n throughput = %f MB/s\n-------------------\n", seconds,micros,window,
     (filelen/ ( seconds+micros*(pow(10,-6)) ) )*pow(10,-6) );
-    
 
 
     //save time for comparison-----------------------------
