@@ -312,7 +312,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         }
                         
                         sstresh = ceilf(flightSize/2);
-                        window = sstresh + dupAck;
+                        window = 1;
                         dupAck = 0;
                     
                     }else{ // not yet considered as a lost segment -> keep sending
@@ -387,7 +387,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             }
             
             timeout.tv_sec = 0;
-            timeout.tv_usec = srtt_usec*100;
+            timeout.tv_usec = srtt_usec*10;
             
 
             sstresh = flightSize/2;
