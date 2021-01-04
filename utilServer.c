@@ -13,7 +13,7 @@
 #include "utilServer.h"
 
 #ifndef RCVSIZE
-	#define RCVSIZE 1024
+	#define RCVSIZE 1000
 #endif
 
 #ifndef PORTLEN
@@ -390,9 +390,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             timeout.tv_usec = srtt_usec*100;
             
 
-            //Fast retransmit
-            flightSize = window;
-            sstresh = ceilf(flightSize/2);
+            sstresh = flightSize/2;
             window = 1;
             printf("\n SRTT : \n %ld sec.\n %ld usec.\n\n",srtt_sec,srtt_usec);
         }
