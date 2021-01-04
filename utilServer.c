@@ -198,8 +198,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         FD_SET(sock, &set);
         select(sock+1,&set,NULL,NULL,&timeout);
         
-        printf("window = %f | flightsize : %f | sstresh = %f\n\n",window,flightSize,sstresh);
-        fprintf(log,"window : %f | sstresh : %f | flightsize : %f\n",window,sstresh, flightSize);
+        printf("window = %f | flightsize : %f | sstresh = %f \n\n",window,flightSize,sstresh);
+        fprintf(log,"window : %f | sstresh : %f | flightsize : %f | SRTT : %ldµs\n",window,sstresh, flightSize,srtt_usec);
         if( FD_ISSET(sock,&set) ){
 
             recvdSize = recvfrom(sock, (char*) response, RCVSIZE, MSG_WAITALL, (struct sockaddr*)&client, &clientLen);
@@ -229,7 +229,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                    flightSize --; //because a segment has been acked
                 }
 
-                if (maybeAcked > lastTransmittedSeqN && maybeAcked <= lastSent ){ //currently acked segment is the next one of the last acked segment
+                if (maybeAcked > lastTransmittedSeqN){ //currently acked segment is the next one of the last acked segment
                       printf("normal ACK");
                       lastTransmittedSeqN = maybeAcked;
                       dupAck = 0; // /!\check
@@ -387,7 +387,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             }
             
             timeout.tv_sec = 0;
-            timeout.tv_usec = srtt_usec;
+            timeout.tv_usec = srtt_usec*100;
+            
 
             //Fast retransmit
             flightSize = window;
