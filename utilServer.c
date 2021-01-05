@@ -196,8 +196,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
 
     //DEBUG RTT
-    FILE *rttLog = fopen("rtts.txt","w");
-    FILE *windowLog = fopen("windows.txt","w");
+    FILE *rttLog = fopen("rtts.txt","w");//DEL
+    FILE *windowLog = fopen("windows.txt","w");//DEL
 
     //--------------------------- SEND FILE CONTENT TO CLIENT -----------------
     int sent = -1;
@@ -301,7 +301,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                     //printListe(sendTimes);
                 }
                 timeout.tv_sec = 0;
-                timeout.tv_usec = 0.1*srtt_usec;
+                timeout.tv_usec = 0.10*srtt_usec;
                 fprintf(rttLog,"%li\n",srtt_usec); //DEL
                 printf("timeout_us=%ld\n",timeout.tv_usec);
                 gettimeofday(&begin,NULL);
@@ -378,7 +378,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                     dupAck ++; //WARNING : not necessarly a dup ACK ? (if ack receiving order differs from ack sending order)
                     //printf("Received ACK_%d for the %d time\n",maybeAcked,dupAck);
 
-                    if (dupAck >= 5){ //consider a lost segment
+                    if (dupAck >= 10){ //consider a lost segment
                         //printf("At least 3 dupAcks\n");
                         //printf("flightsize : %d, floor(window) : %f, sent: %d\n",flightSize,floor(window),sent);
 
@@ -497,7 +497,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                 successiveTO = 0;
             }
             timeout.tv_sec = 0;
-            timeout.tv_usec = 0.1*srtt_usec;
+            timeout.tv_usec = 0.10*srtt_usec;
         }
     }
 

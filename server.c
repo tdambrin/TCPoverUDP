@@ -85,12 +85,12 @@ int main (int argc, char *argv[]) {
 //  printf("Listen done\n");
 
 // -------------------------------- ACCEPT CONNEXION AND HANDLE IF CHILD PROCESSES -------------------------------------
-int fragSize = SEQUENCELEN + 1024;
+int fragSize = SEQUENCELEN + 1594;
 int com_sockets[100]; // used to store clients' sockets descriptors
 int sync; 
 char* msgType = (char*) malloc(4); // on donnera pour l'instant les requetes sous la forme ABC_ ou ABC = {GET, ...}
+int newPort = port1 + 1;
 while (1) {
-	int newPort = port1 + 1;
   /*  printf("Accepting\n");
     select(sock_udp + 1, &set, NULL, NULL, 0);
     printf("SELECT DONE\n");*/
@@ -172,5 +172,6 @@ while (1) {
 }
 	close(sock_co_udp);
 	return 0;
+
 
 }
