@@ -281,7 +281,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                     dupAck ++; //WARNING : not necessarly a dup ACK ? (if ack receiving order differs from ack sending order)
                     printf("Received ACK_%d for the %d time\n",maybeAcked,dupAck);
 
-                    if (dupAck >= 3){ //consider a lost segment
+                    if (dupAck >= 5){ //consider a lost segment
                         printf("At least 3 dupAcks\n");
                         lastDupAckRetr = maybeAcked;
                         msg[0] = '\0';
@@ -388,9 +388,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             
             timeout.tv_sec = 0;
             timeout.tv_usec = srtt_usec*10;
-            
 
-            sstresh = flightSize/2;
+            sstresh = ceilf(flightSize/2);
             window = 1;
             printf("\n SRTT : \n %ld sec.\n %ld usec.\n\n",srtt_sec,srtt_usec);
         }
@@ -408,6 +407,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
     printf("FILE CONTENT FULLY TRANSMITTED, sent endMsg = %s\n", endMsg);
     //free(content);
+
+
 
     gettimeofday(&end,NULL);
     long seconds = (end.tv_sec - start.tv_sec);
