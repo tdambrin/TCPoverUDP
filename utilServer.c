@@ -101,6 +101,56 @@ int seqNToInt(char *seqNumber){
     return atoi(seqNumber);
 }
 
+void insertionListeTriee(LISTE *pliste, int ackN, long us_time)	
+{
+       if((*pliste)==NULL){ 
+                (*pliste) = (LISTE) malloc(sizeof(LISTE));
+                if (pliste == NULL) {
+                        fprintf(stderr, "insertionListeTriee: plus de place mémoire");
+                        exit(EXIT_FAILURE);
+                }
+                (*pliste)->seqN = ackN;
+                (*pliste)->us = us_time;
+                (*pliste)->suivant = NULL;
+        }else if ((*pliste)->seqN > ackN){
+                LISTE toSave = (LISTE) malloc(sizeof(LISTE));
+                *toSave = **pliste;
+                (*pliste)->seqN = ackN;
+                (*pliste)->us = us_time;
+                (*pliste)->suivant = toSave;
+                //free(toSave);
+        }else{
+                insertionListeTriee(&((*pliste)->suivant), ackN, us_time);
+        }
+  return;
+}
+
+long suppFirstOcc(LISTE *pliste, int ackN){
+        if ( *pliste==NULL){
+                return -1;
+        }
+        long res = -1;
+        if ((*pliste)->seqN == ackN){
+            res = (*pliste)->us;
+            LISTE tmp = *pliste;
+            *pliste = (*pliste)->suivant;
+            free(tmp);
+        }else if ( (*pliste)->seqN < ackN){
+            res = suppFirstOcc(&((*pliste)->suivant),ackN);
+        }
+        return res;
+}
+
+int suppHead(LISTE *pliste){
+        if ( *pliste==NULL){
+                return 0;
+        }
+        LISTE tmp = *pliste;
+        *pliste = (*pliste)->suivant;
+        free(tmp);
+        return 1;
+}
+
 //current message format : XXXX<data> with XXXX sequence number
 int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dataSize, int seqNsize, int initAck){
                         //WARNING FOR LATER : handle sending of more content than existing
@@ -150,8 +200,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     float flightSize = 0;
     int dupAck = 0; 
     char* currentSeqN = (char *) malloc (SEQUENCELEN);
-    long srtt_sec = 2; //arbitrary value, this estimator should converge to the real value of rtt_sec
-    long srtt_usec = 0;
+    long srtt_sec = 0; //arbitrary value, this estimator should converge to the real value of rtt_sec
+    long srtt_usec = 15000;//same
     timeout.tv_sec = srtt_sec;
     timeout.tv_usec = 0;
 
@@ -161,14 +211,15 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     //----------- PERF ---------------------
     int lastDupAckRetr = -1;
     int segSent = 0;
-    int computeSRTT = 0;
     int timeout_nb = 0;
     int dupack_nb = 0;
     int ignored_nb = 0;
-    
+    int waitAck = 0;
+    LISTE sendTimes = NULL; // used to store the sending instants of packets to compute the rtt
+
+
     //Send window first segments
     for (int i = 0; i < window; i++){
-        computeSRTT = 1;
         printf("\n#lastSent: %d\n\n",lastSent);
         printf("i:%d,window %f\n",i,window);
         strAck[3] = '\0';
@@ -180,11 +231,9 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
         //WARNING FOR LATER : handle last message that can be shorter
         sent = sendto(sock, (char*) msg, dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
-        if(i==0){
-            gettimeofday(&begin,NULL);
-            computeSRTT = 1;
-        }
         lastSent += 1;
+        gettimeofday(&begin,NULL);
+        insertionListeTriee(&sendTimes, lastSent, begin.tv_sec*1000000 + begin.tv_usec);
         printf("\nSEG_%i SENT \n",lastSent);
         flightSize ++;
         //printf("SENT %i bytes | seqN = %i \n", sent, initAck+i);
@@ -205,30 +254,41 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         printf("window = %f | flightsize : %f | sstresh = %f \n\n",window,flightSize,sstresh);
         fprintf(log,"window : %f | sstresh : %f | flightsize : %f | SRTT : %ldµs\n",window,sstresh, flightSize,srtt_usec);
         if( FD_ISSET(sock,&set) ){
-
+            //reception
             recvdSize = recvfrom(sock, (char*) response, RCVSIZE, MSG_WAITALL, (struct sockaddr*)&client, &clientLen);
-
             response[recvdSize] = '\0';
             maybeAcked = seqNToInt(response + 3);
             response[3] = '\0';
 
-                //Estimation du rtt_sec sur lequel vont se baser les futures estimations du rtt_sec        
-	        if(computeSRTT){
-                gettimeofday(&stop,NULL);
-	            long rtt_sec = (stop.tv_sec - begin.tv_sec);
-	            srtt_sec = ALPHA*srtt_sec + (1-ALPHA)*rtt_sec;
-	            long rtt_usec = (rtt_sec*1000000 + stop.tv_usec - begin.tv_usec);
-                srtt_usec = ALPHA*srtt_usec + (1-ALPHA)*rtt_usec;
-                computeSRTT = 0;
-            }
-            timeout.tv_sec = 0;
-            timeout.tv_usec = srtt_usec;
-            
-            //-------------------
-
             printf("\nACK_%i RCV \n",maybeAcked);
 
             if (strcmp(response, "ACK") == 0){
+
+                //srtt ---------------
+                gettimeofday(&stop,NULL);
+                    //delete the last srtt seqN if it's lower than the current seqN
+                while (sendTimes != NULL && sendTimes->seqN < maybeAcked){
+                    printf("supp|");
+                    suppHead(&sendTimes);
+                }
+
+                long sentTime = suppFirstOcc(&sendTimes,maybeAcked);
+                if (sentTime > 0){
+                    printf("removed %i from list\n",maybeAcked);
+                    long rtt_usec = stop.tv_sec*1000000 + stop.tv_usec - sentTime;
+                    long temp = srtt_usec;
+                    srtt_usec = ALPHA*srtt_usec + (1-ALPHA)*rtt_usec;
+                    if (srtt_usec > 2*temp){
+                        srtt_usec = temp;
+                    }
+                }else{
+                    printf("no corresponding seqN:%i in sendTimes\n", maybeAcked);
+                    //printListe(sendTimes);
+                }
+                timeout.tv_sec = 0;
+                timeout.tv_usec = 0.10*srtt_usec;            
+                //------------------
+
                 if(flightSize > 0){
                    flightSize --; //because a segment has been acked
                 }
@@ -252,9 +312,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                     //*********
 
                       //transmit next segments (from lastSent not lastTransmitted)
-                      segSent = 0;
                       while (flightSize < floor(window) && lastSent < lastSeqN ){
-                        computeSRTT = 1; 
                         msg[0] = '\0';
                         intToSeqN(lastSent+1, currentSeqN);
                         strncat(msg, currentSeqN, seqNsize);
@@ -268,16 +326,14 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             sent = sendto(sock, (char*) msg,  lastMsgSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                             printf("SEG_%i SENT \n",lastSent+1);
                         }
-                        if(segSent == 0){
-                            gettimeofday(&begin,NULL);
-                        }
 
                         
                         if (sent > -1){
                             flightSize ++;
                             lastSent += 1;
+                            gettimeofday(&begin,NULL);
+                            insertionListeTriee(&sendTimes, lastSent, begin.tv_sec*1000000 + begin.tv_usec);
                         }
-                        segSent++;
                     }
 
                 }else if (lastTransmittedSeqN == maybeAcked && lastDupAckRetr != maybeAcked) { //something went wrong with the transmission : the currently acked is not consecutive 
@@ -307,13 +363,13 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         //WARNING FOR LATER : handle last message that can be shorter
 
                         if (sent > -1){
-                            computeSRTT = 1;
                             flightSize ++;
                             int diff = lastTransmittedSeqN+1 - lastSent; //avant on avait mis 'lastDupack - lastSent
                             if (diff > 0){
                                 lastSent += diff; //not sure
                             }
                             gettimeofday(&begin,NULL);
+                            insertionListeTriee(&sendTimes, lastTransmittedSeqN, begin.tv_sec*1000000 + begin.tv_usec);
                         }
                         
                         sstresh = ceilf(flightSize/2);
@@ -338,14 +394,11 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                                 printf("SEG_%i SENT \n",lastSent + 1);
                             }
 
-                            if( segSent == 0 ){
-                                gettimeofday(&begin,NULL);
-                            }
-
                             if (sent > -1){
-                                computeSRTT = 1;
                                 flightSize ++;
                                 lastSent += 1;
+                                gettimeofday(&begin,NULL);
+                                insertionListeTriee(&sendTimes, lastSent, begin.tv_sec*1000000 + begin.tv_usec);
                                 //printf("SENT %i bytes | seqN = %i \n", sent, lastSent);
                             }
                             segSent++;
@@ -393,9 +446,10 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                 printf("SEG_%i SENT \n",lastTransmittedSeqN+1);
             }
             
+            gettimeofday(&begin,NULL);
+            insertionListeTriee(&sendTimes, lastTransmittedSeqN, begin.tv_sec*1000000 + begin.tv_usec);
             timeout.tv_sec = 0;
-            timeout.tv_usec = srtt_usec*10;
-
+            timeout.tv_usec = srtt_usec;
             sstresh = ceilf(flightSize/2);
             printf("\n SRTT : \n %ld sec.\n %ld usec.\n\n",srtt_sec,srtt_usec);
         }
