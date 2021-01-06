@@ -106,6 +106,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         //WARNING FOR LATER : handle sending of more content than existing
 
     FILE* log = fopen("log.txt", "w");
+    FILE* perf = fopen("perf.txt", "a");
 
     // ---------------------- INIT ---------------------
     char* content;
@@ -161,6 +162,9 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     int lastDupAckRetr = -1;
     int segSent = 0;
     int computeSRTT = 0;
+    int timeout_nb = 0;
+    int dupack_nb = 0;
+    int ignored_nb = 0;
     
     //Send window first segments
     for (int i = 0; i < window; i++){
@@ -235,7 +239,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                       dupAck = 0; // /!\check
 
                       //******slowstart
-                      if(window < sstresh){
+                      if(0){
                           printf("\n*slowstart*\n");
                           //window += maybeAcked - lastTransmittedSeqN;
                           window += 1;
@@ -278,11 +282,12 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
                 }else if (lastTransmittedSeqN == maybeAcked && lastDupAckRetr != maybeAcked) { //something went wrong with the transmission : the currently acked is not consecutive 
                     printf("dupack");
+                    dupack_nb ++;
                     dupAck ++; //WARNING : not necessarly a dup ACK ? (if ack receiving order differs from ack sending order)
                     printf("Received ACK_%d for the %d time\n",maybeAcked,dupAck);
 
                     if (dupAck >= 5){ //consider a lost segment
-                        printf("At least 3 dupAcks\n");
+                        printf("At least 5 dupAcks\n");
                         lastDupAckRetr = maybeAcked;
                         msg[0] = '\0';
                         intToSeqN(lastTransmittedSeqN + 1, currentSeqN);
@@ -348,8 +353,9 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                     }
                 }else{
                     printf("Received an inferior ack -> ignored \n");
+                    ignored_nb ++;
                     //******slowstart
-                      if(window < sstresh){
+                      if(0){
                           printf("\n*slowstart*\n");
                           //window += maybeAcked - lastTransmittedSeqN;
                           window += 1;
@@ -369,6 +375,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         }else{
             printf("\n#TIMEOUT\n");
             fprintf(log,"#TIMEOUT\n");
+            timeout_nb ++;
 
             msg[0] = '\0';
             intToSeqN(lastTransmittedSeqN + 1, currentSeqN);
@@ -413,9 +420,13 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     gettimeofday(&end,NULL);
     long seconds = (end.tv_sec - start.tv_sec);
     long micros = (seconds*1000000 + end.tv_usec - start.tv_usec);
-    printf("\n-------------------\nPROGRAM RAN IN :\n %ld s and %ld us \nwith window = %f\n throughput = %f MB/s\n-------------------\n", seconds,micros,window,
-    (filelen/ ( seconds+micros*(pow(10,-6)) ) )*pow(10,-6) );
+    printf("\n-------------------\nPROGRAM RAN IN :\n %ld s and %ld us \nwith window = %f\n throughput = %f MB/s\nNb timeout : %d\nNb dupAck : %d\nNb ignored: %d\n-------------------\n", seconds,micros,window,
+    (filelen/ ( seconds+micros*(pow(10,-6)) ) )*pow(10,-6),timeout_nb, dupack_nb, ignored_nb );
+    fprintf(perf,"\n-------------------\nPROGRAM RAN IN :\n %ld s and %ld us \nwith window = %f\n throughput = %f MB/s\nNb timeout : %d\nNb dupAck : %d\nNb ignored: %d\n-------------------\n", seconds,micros,window,
+    (filelen/ ( seconds+micros*(pow(10,-6)) ) )*pow(10,-6),timeout_nb, dupack_nb, ignored_nb );
 
+    fclose(perf);
+    fclose(log);
 
     //save time for comparison-----------------------------
    /* FILE* times = fopen("times.txt", "a");

@@ -85,7 +85,7 @@ int main (int argc, char *argv[]) {
 //  printf("Listen done\n");
 
 // -------------------------------- ACCEPT CONNEXION AND HANDLE IF CHILD PROCESSES -------------------------------------
-int fragSize = SEQUENCELEN + 1024;
+int fragSize = 1500;
 int com_sockets[100]; // used to store clients' sockets descriptors
 int sync; 
 char* msgType = (char*) malloc(4); // on donnera pour l'instant les requetes sous la forme ABC_ ou ABC = {GET, ...}
