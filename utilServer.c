@@ -286,8 +286,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                     dupAck ++; //WARNING : not necessarly a dup ACK ? (if ack receiving order differs from ack sending order)
                     printf("Received ACK_%d for the %d time\n",maybeAcked,dupAck);
 
-                    if (dupAck >= 5){ //consider a lost segment
-                        printf("At least 5 dupAcks\n");
+                    if (dupAck >= 3){ //consider a lost segment
+                        printf("At least 3 dupAcks\n");
                         lastDupAckRetr = maybeAcked;
                         msg[0] = '\0';
                         intToSeqN(lastTransmittedSeqN + 1, currentSeqN);
@@ -317,7 +317,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         }
                         
                         sstresh = ceilf(flightSize/2);
-                        window = 1;
+                        window = sstresh + dupAck;
                         dupAck = 0;
                     
                     }else{ // not yet considered as a lost segment -> keep sending
@@ -397,7 +397,6 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             timeout.tv_usec = srtt_usec*10;
 
             sstresh = ceilf(flightSize/2);
-            window = 1;
             printf("\n SRTT : \n %ld sec.\n %ld usec.\n\n",srtt_sec,srtt_usec);
         }
     }
