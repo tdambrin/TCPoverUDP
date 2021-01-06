@@ -301,7 +301,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                     //printListe(sendTimes);
                 }
                 timeout.tv_sec = 0;
-                timeout.tv_usec = 0.10*srtt_usec;
+                timeout.tv_usec = 0.07*srtt_usec; //RTTUPDATE
                 fprintf(rttLog,"%li\n",srtt_usec); //DEL
                 printf("timeout_us=%ld\n",timeout.tv_usec);
                 gettimeofday(&begin,NULL);
@@ -497,7 +497,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                 successiveTO = 0;
             }
             timeout.tv_sec = 0;
-            timeout.tv_usec = 0.10*srtt_usec;
+            timeout.tv_usec = 0.07*srtt_usec; //RTTUPDATE
         }
     }
 
