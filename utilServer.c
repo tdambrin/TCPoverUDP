@@ -141,7 +141,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
     //--------------------------- SEND FILE CONTENT TO CLIENT -----------------
     int lastSeqN = filelen/dataSize + initAck ;
-    float window = 1;
+    float window = 5;
     int sent = -1;
     int transmitted = 0; //nb of bytes sent and acked
     int lastSent = initAck - 1; //seqN of last sent segment
@@ -193,7 +193,14 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         FD_ZERO(&set);
         FD_SET(sock, &set);
         select(sock+1,&set,NULL,NULL,&timeout);
-        
+
+        //Put an arbitrary value (close to the real one) when we don't have compute yet the real one
+        if (firstTime){
+            timeout.tv_sec = 0;
+            timeout.tv_usec = 5000;
+            srtt_usec = 5000;
+        }
+
         printf("window = %f | flightsize : %f | sstresh = %f \n\n",window,flightSize,sstresh);
         fprintf(log,"window : %f | sstresh : %f | flightsize : %f | SRTT : %ldµs\n",window,sstresh, flightSize,srtt_usec);
         if( FD_ISSET(sock,&set) ){
@@ -212,26 +219,27 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 	            long rtt_usec = (rtt_sec*1000000 + stop.tv_usec - begin.tv_usec);
                 srtt_usec = ALPHA*srtt_usec + (1-ALPHA)*rtt_usec;
                 firstTime = 0;
+                timeout.tv_sec = 0;
+                timeout.tv_usec = srtt_usec;
             }
-            timeout.tv_sec = 0;
-            timeout.tv_usec = srtt_usec;
             
             //-------------------
 
             printf("\nACK_%i RCV \n",maybeAcked);
 
             if (strcmp(response, "ACK") == 0){
-                if(flightSize > 0){
-                   flightSize --; //because a segment has been acked
-                }
+                if (flightSize > 0){
+                        flightSize-= 1;
+                    }
 
+                
                 if (maybeAcked > lastTransmittedSeqN){ //currently acked segment is the next one of the last acked segment
                       printf("normal ACK");
                       lastTransmittedSeqN = maybeAcked;
                       dupAck = 0; // /!\check
 
                       //******congestion avoidance
-                      window += 1/floor(window);window += 1/floor(window);
+                     // window += 1/floor(window);window += 1/floor(window);
                     //*********
 
                       //transmit next segments (from lastSent not lastTransmitted)
@@ -258,7 +266,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         segSent++;
                     }
 
-                }else if (lastTransmittedSeqN == maybeAcked && lastDupAckRetr != maybeAcked) { //something went wrong with the transmission : the currently acked is not consecutive 
+                }else if (lastTransmittedSeqN == maybeAcked) { //something went wrong with the transmission : the currently acked is not consecutive 
                     printf("dupack");
                     dupack_nb ++;
                     dupAck ++; //WARNING : not necessarly a dup ACK ? (if ack receiving order differs from ack sending order)
@@ -289,15 +297,15 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             flightSize ++;
                             int diff = lastTransmittedSeqN+1 - lastSent; //avant on avait mis 'lastDupack - lastSent
                             if (diff > 0){
-                                lastSent += diff; //not sure
+                                //lastSent += diff; //not sure
                             }
                         }
                         
                         sstresh = ceilf(flightSize/2);
-                        window = sstresh + dupAck;
+                        //window = sstresh + dupAck;
                         dupAck = 0;
                     
-                    }else{ // not yet considered as a lost segment -> keep sending
+                    } // not yet considered as a lost segment -> keep sending
                         segSent = 0;
                         while (flightSize < floor(window) && lastSent < lastSeqN - 1){
                             msg[0] = '\0';
@@ -323,12 +331,12 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             }
                             segSent++;
                         }
-                    }
+                    
                 }else{
                     printf("Received an inferior ack -> ignored \n");
                     ignored_nb ++;
                     //******congestion avoidance
-                      window += 1/floor(window);
+                     // window += 1/floor(window);
                     //*********
                     
                 }
@@ -358,8 +366,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             }
             
             timeout.tv_sec = 0;
-            timeout.tv_usec = srtt_usec*2;
-
+            timeout.tv_usec = srtt_usec*1.3;
+           // window = 4;
             sstresh = ceilf(flightSize/2);
             printf("\n SRTT : \n %ld sec.\n %ld usec.\n\n",srtt_sec,srtt_usec);
         }
@@ -383,10 +391,10 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     gettimeofday(&end,NULL);
     long seconds = (end.tv_sec - start.tv_sec);
     long micros = (seconds*1000000 + end.tv_usec - start.tv_usec);
-    printf("\n-------------------\nPROGRAM RAN IN :\n %ld s and %ld us \nwith window = %f\n throughput = %f MB/s\nNb timeout : %d\nNb dupAck : %d\nNb ignored: %d\n-------------------\n", seconds,micros,window,
-    (filelen/ ( seconds+micros*(pow(10,-6)) ) )*pow(10,-6),timeout_nb, dupack_nb, ignored_nb );
-    fprintf(perf,"\n-------------------\nPROGRAM RAN IN :\n %ld s and %ld us \nwith window = %f\n throughput = %f MB/s\nNb timeout : %d\nNb dupAck : %d\nNb ignored: %d\n-------------------\n", seconds,micros,window,
-    (filelen/ ( seconds+micros*(pow(10,-6)) ) )*pow(10,-6),timeout_nb, dupack_nb, ignored_nb );
+    printf("\n-------------------\nPROGRAM RAN IN :\n %ld s and %ld us \nwith window = %f\n throughput = %f MB/s\nNb timeout : %d\nNb dupAck : %d\nNb ignored: %d\n SRTT : %ld µs\n-------------------\n", seconds,micros,window,
+    (filelen/ ( seconds+micros*(pow(10,-6)) ) )*pow(10,-6),timeout_nb, dupack_nb, ignored_nb,srtt_usec );
+    fprintf(perf,"\n-------------------\nPROGRAM RAN IN :\n %ld s and %ld us \nwith window = %f\n throughput = %f MB/s\nNb timeout : %d\nNb dupAck : %d\nNb ignored: %d\n SRTT : %ld µs\n-------------------\n", seconds,micros,window,
+    (filelen/ ( seconds+micros*(pow(10,-6)) ) )*pow(10,-6),timeout_nb, dupack_nb, ignored_nb,srtt_usec );
 
     fclose(perf);
     fclose(log);

@@ -11,3 +11,6 @@
     - sstresh : trop faible
     - flightsize : trop faible
     - window : trop faible dépasse jamais 2 ou 3
+
+
+RASSEMBLER LES PARTIES COMMUNES
