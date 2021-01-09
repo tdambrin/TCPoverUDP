@@ -189,7 +189,6 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     printf("lastSEQN = %i\n", lastSeqN);
     int firstTime = 1;
     while (lastTransmittedSeqN < lastSeqN){
-    //while (transmitted < filelen){
         FD_ZERO(&set);
         FD_SET(sock, &set);
         select(sock+1,&set,NULL,NULL,&timeout);
@@ -222,7 +221,6 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                 timeout.tv_sec = 0;
                 timeout.tv_usec = srtt_usec;
             }
-            
             //-------------------
 
             printf("\nACK_%i RCV \n",maybeAcked);
@@ -266,7 +264,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         segSent++;
                     }
 
-                }else if (lastTransmittedSeqN == maybeAcked) { //something went wrong with the transmission : the currently acked is not consecutive 
+                }else if (lastTransmittedSeqN == maybeAcked) { //something went wrong with the transmission : the currently acked is not higher 
                     printf("dupack");
                     dupack_nb ++;
                     dupAck ++; //WARNING : not necessarly a dup ACK ? (if ack receiving order differs from ack sending order)
@@ -307,7 +305,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                     
                     } // not yet considered as a lost segment -> keep sending
                         segSent = 0;
-                        while (flightSize < floor(window) && lastSent < lastSeqN - 1){
+                        while (flightSize < floor(window)){
                             msg[0] = '\0';
                             intToSeqN(lastSent + 1, currentSeqN);
                             strncat(msg, currentSeqN, seqNsize);
@@ -353,6 +351,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             intToSeqN(lastTransmittedSeqN + 1, currentSeqN);
             strncat(msg, currentSeqN, seqNsize);
 
+            //Retransmit the segment lost
             if(lastTransmittedSeqN >= lastSeqN - 1){
                 printf("about to send from timeout, lastTransmitted = %i\n", lastTransmittedSeqN+1);
                 memcpy(msg + seqNsize, content + (lastTransmittedSeqN + 1 - initAck)*dataSize, lastMsgSize); //WARNING : if dataSize=cste
