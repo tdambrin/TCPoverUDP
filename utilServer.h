@@ -17,4 +17,6 @@ typedef ELEMLIST *LISTE;
 
 void insertionListeTriee(LISTE *pliste, int ackN, long us_time);
 long suppFirstOcc(LISTE *pliste, int ackN);
-void printListe2(LISTE l); 
+void printListe(LISTE l); 
+long decrListeBis(LISTE *pliste, int seqN);
+void incrListeBis(LISTE *pliste, int seqN);

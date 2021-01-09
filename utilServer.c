@@ -51,7 +51,57 @@ void insertionListeTriee(LISTE *pliste, int ackN, long us_time)
         }
   return;
 }
+void incrListeBis(LISTE *pliste, int seqN)	{
+    //in this lists, us <=> number of time a sseg has been retransmitted
+       if((*pliste)==NULL){ 
+                (*pliste) = (LISTE) malloc(sizeof(LISTE));
+                if (pliste == NULL) {
+                        fprintf(stderr, "insertionListeTriee: plus de place mémoire");
+                        exit(EXIT_FAILURE);
+                }
+                (*pliste)->seqN = seqN;
+                (*pliste)->us = 1;
+                (*pliste)->suivant = NULL;
+        }else if ((*pliste)->seqN > seqN){
+                LISTE toSave = (LISTE) malloc(sizeof(LISTE));
+                *toSave = **pliste;
+                (*pliste)->seqN = seqN;
+                (*pliste)->us = 1 ;
+                (*pliste)->suivant = toSave;
+                //free(toSave);
+        }else if ((*pliste)->seqN == seqN){
+            (*pliste)->us += 1;
+        }else{
+                incrListeBis(&((*pliste)->suivant), seqN);
+        }
+  return;
+}
 
+long decrListeBis(LISTE *pliste, int seqN)	{
+    //in this lists, us <=> number of time a sseg has been retransmitted
+       if((*pliste)==NULL){ 
+           return 0;
+        }else if ((*pliste)->seqN > seqN){
+            return 0;
+        }else if ((*pliste)->seqN == seqN){
+            (*pliste)->us -= 1;
+            return (*pliste)->us;
+        }else{
+                return decrListeBis(&((*pliste)->suivant), seqN);
+        }
+}
+
+long getRetransmitted(LISTE *pliste, int seqN){
+    if((*pliste)==NULL){ 
+           return 0;
+        }else if ((*pliste)->seqN > seqN){
+            return 0;
+        }else if ((*pliste)->seqN == seqN){
+            return (*pliste)->us;
+        }else{
+                return getRetransmitted(&((*pliste)->suivant), seqN);
+        }
+}
 long suppFirstOcc(LISTE *pliste, int ackN){
         if ( *pliste==NULL){
                 return -1;
@@ -202,13 +252,13 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     //--------------------------- SEND FILE CONTENT TO CLIENT -----------------
     int sent = -1;
     int successiveTO = 0; // number of successive timeout passages
-    int transmitted = 0; //nb of bytes sent and acked
     int lastSent = initAck - 1; //seqN of last sent segment
     int lastTransmittedSeqN = initAck - 1; //seqN of last acked segment
     int maybeAcked; //used to store seqN answered by client
     int flightSize = 0;
     int dupAck = 0; 
     LISTE sendTimes = NULL; // used to store the sending instants of packets to compute the rtt
+    LISTE retransmitted = NULL;//used to store how many times each segment (for a given seqN) has been retrasnmitted
     char* currentSeqN = (char *) malloc (SEQUENCELEN); //used to temporary store a sequence number
     long srtt_sec = 0; //arbitrary value, this estimator should converge to the real value of rtt
     long srtt_usec = 12000; //rtt estimation in ms
@@ -377,8 +427,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
                     dupAck ++; //WARNING : not necessarly a dup ACK ? (if ack receiving order differs from ack sending order)
                     //printf("Received ACK_%d for the %d time\n",maybeAcked,dupAck);
-
-                    if (dupAck >= 10){ //consider a lost segment
+                    int isNormal = (decrListeBis(&retransmitted,maybeAcked) > 0);
+                    if (dupAck >= 10 && isNormal == 0){ //consider a lost segment
                         //printf("At least 3 dupAcks\n");
                         //printf("flightsize : %d, floor(window) : %f, sent: %d\n",flightSize,floor(window),sent);
 
@@ -403,6 +453,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
                         if (sent > -1){
                             flightSize ++;
+                            incrListeBis(&retransmitted, lastTransmittedSeqN+1);
                             /*int diff = lastTransmittedSeqN+1 - lastSent; //avant on avait mis 'lastDupack - lastSent
                             if (diff > 0){
                                 lastSent += diff; //not sure
@@ -430,25 +481,16 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             sent = sendto(sock, (char*) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                             printf("SEG_%i SENT from <dupack\n",lastSent + 1);
                        }else{
-                            //printf("before copy lastMSg\n");
-                            //printf("msgSize = %li, dataSize = %i\n", filelen - (lastSent - initAck + 1)*dataSize, dataSize);
-                            //printf("lastMsgSize = %i\n", lastMsgSize);
                             memcpy(msg + seqNsize, content + (lastSent + 1 - initAck)*dataSize, lastMsgSize/10); //WARNING : if dataSize=cste
-                            //printf("after copy lastMsg\n");
                             sent = sendto(sock, (char*) msg,  lastMsgSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
-                            //printf("SEG_%i SENT \n",lastSent + 1);
-                            //printf("message :\n %s \n-------------------\n",msg);
                         }
 
-                            //gettimeofday(&begin,NULL);
                             if (sent > -1){
                                 flightSize ++;
                                 lastSent += 1;
                                 gettimeofday(&temp_tv,NULL);
                                 insertionListeTriee(&sendTimes, lastSent, temp_tv.tv_sec*1000000 + temp_tv.tv_usec);
-                                //printf("SENT %i bytes | seqN = %i \n", sent, lastSent);
                             }
-                            //printf("flightsize : %d, floor(window) : %f, sent: %d\n",flightSize,floor(window),sent);
                         }
                     }
                 }else{
@@ -458,7 +500,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             successiveTO = 0;
         //TIMEOUT : segment lost
         }else{
-            //printf("\n#TIMEOUT\n");
+            
             sstresh = flightSize/2;
             //window = 1; seems to reduce performances
             wentToTO ++;//DEL
@@ -466,11 +508,11 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
             intToSeqN(lastTransmittedSeqN + 1, currentSeqN);
             strncat(msg, currentSeqN, seqNsize);
+            
+            int alreadyRT = getRetransmitted(&retransmitted,lastTransmittedSeqN+1);
 
             if(lastTransmittedSeqN >= lastSeqN - 1){
-                //printf("about to send from timeout, lastTransmitted = %i\n", lastTransmittedSeqN+1);
                 memcpy(msg + seqNsize, content + (lastTransmittedSeqN - initAck + 1)*dataSize, lastMsgSize); //WARNING : if dataSize=cste
-                //printf("copied msg\n");
                 sent = sendto(sock, (char *) msg,  lastMsgSize + seqNsize, MSG_CONFIRM, (struct sockaddr *)&client, clientLen);
                 //printf("SEG_%i SENT from timeout\n",lastTransmittedSeqN+1);
                 //printf("message :\n %s \n-------------------\n",msg);
@@ -481,12 +523,16 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                 sent = sendto(sock, (char *) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr *)&client, clientLen);
                 printf("SEG_%i SENT from timeout with rtt = %lds and %ldus\n",lastTransmittedSeqN+1, srtt_sec,srtt_usec);
             }
+
+            if (sent > -1){
+                incrListeBis(&retransmitted, lastTransmittedSeqN+1);
+            }
             gettimeofday(&temp_tv,NULL);
             insertionListeTriee(&sendTimes, lastTransmittedSeqN+1, temp_tv.tv_sec*1000000 + temp_tv.tv_usec);
-            gettimeofday(&begin,NULL);
             if (lastTransmittedSeqN > 750){
                 printListe(sendTimes);
             }
+            
             successiveTO++;
 
 
