@@ -285,7 +285,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     LISTE retransmitted = NULL;//used to store how many times each segment (for a given seqN) has been retrasnmitted
     char* currentSeqN = (char *) malloc (SEQUENCELEN); //used to temporary store a sequence number
     long srtt_sec = 0; //arbitrary value, this estimator should converge to the real value of rtt
-    long srtt_usec = 12000; //rtt estimation in ms
+    long srtt_usec = 1000; //rtt estimation in ms
     timeout.tv_sec = srtt_sec; //will never be used (all will be put in us)
     timeout.tv_usec = srtt_usec;
 
@@ -477,7 +477,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
                       //transmit next segments (from lastSent not lastTransmitted)
                       //printf("\nflightSize : %d, window : %f\n", flightSize,window);
-                    while (flightSize < floor(window) && lastSent < lastSeqN ){
+                    while (flightSize < floor(window) && lastSent < lastSeqN && lastSent < lastTransmittedSeqN+100){
   
                         //printf("transmitted : %d, filelen : %ld\n",transmitted,filelen);
                         msg[0] = '\0';
@@ -606,7 +606,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                     dupAck ++; //WARNING : not necessarly a dup ACK ? (if ack receiving order differs from ack sending order)
                     //printf("Received ACK_%d for the %d time\n",maybeAcked,dupAck);
                     int isNormal = (decrListeBis(&retransmitted,maybeAcked) > 0);
-                    if (dupAck >= 10 && isNormal == 0){ //consider a lost segment
+                    if (dupAck >= 5 && isNormal == 0){ //consider a lost segment
                         //printf("At least 3 dupAcks\n");
                         //printf("flightsize : %d, floor(window) : %f, sent: %d\n",flightSize,floor(window),sent);
 
@@ -730,7 +730,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         dupAck = 0;
                     
                     }else{ // not yet considered as a lost segment -> keep sending
-                        while (flightSize < floor(window) && lastSent < lastSeqN - 1){
+                        while (flightSize < floor(window) && lastSent < lastSeqN - 1  && lastSent < lastTransmittedSeqN+100){
                             msg[0] = '\0';
                             intToSeqN(lastSent + 1, currentSeqN);
                             strncat(msg, currentSeqN, seqNsize);
