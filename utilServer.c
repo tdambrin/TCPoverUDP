@@ -225,6 +225,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     struct timeval timeout, start, end, begin, stop, now, temp_tv,fSent; //time after which we consider a segment lost
 
     // --------------------- READ FILE ------------------
+    int block_size = 50000000;
     FILE* fich = fopen(filename, "r");
     socklen_t clientLen = sizeof(client);
     int recvdSize;
@@ -236,18 +237,41 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     fseek(fich, 0, SEEK_END);
     long filelen = ftell(fich);
     fseek(fich, 0, SEEK_SET);
+    int block_needed = filelen/block_size + 1;
+    if (block_needed*block_size == filelen){ //the last char of the file will be stored on the last char of a block
+        block_needed -=1;
+    }
+    printf("about to get the blocks\n");
+    char *block1 = (char*) malloc(block_size*sizeof(char));
+    char *block2 = (char*) malloc(block_size*sizeof(char));
+    printf("got the blocks\n");
+
     content = (char*) malloc(filelen);
     if (content == NULL){
         perror("Memoire epuisee\n");
         return -1;
     }
     fread(content, 1, filelen, fich);
-    fclose(fich);
+    fseek(fich,0,SEEK_SET);
+    fread(block1,1,block_size,fich);
+    fread(block2,1,block_size,fich);
+    FILE *output = fopen("output.pdf","w");
+    fwrite(block1,block_size,1,output);
+    fwrite(block2,block_size,1,output);
+    int block1_is = 0;
+    int block2_is = 1;
+    int block_to_get = 0; //{1,2} tells which block to use for memcpy
+    int starts_in_block = -1; //used to temporarly store the block number corresponding to the beginning of a packet
+    int end_in_block = -1 ; //used to temporarly store the block number corresponding to the end of a packet
+    int all_in_block = 0; //{0,1} to store if all desired paquet content is within the same block
+    int sizeToGet = 0;
+    //fclose(fich);
 
 
     //DEBUG RTT
     FILE *rttLog = fopen("rtts.txt","w");//DEL
     FILE *windowLog = fopen("windows.txt","w");//DEL
+    FILE *blockLog = fopen("blocks.txt","w");//DEL
 
     //--------------------------- SEND FILE CONTENT TO CLIENT -----------------
     int sent = -1;
@@ -256,7 +280,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     int lastTransmittedSeqN = initAck - 1; //seqN of last acked segment
     int maybeAcked; //used to store seqN answered by client
     int flightSize = 0;
-    int dupAck = 0; 
+    int dupAck = 0;
     LISTE sendTimes = NULL; // used to store the sending instants of packets to compute the rtt
     LISTE retransmitted = NULL;//used to store how many times each segment (for a given seqN) has been retrasnmitted
     char* currentSeqN = (char *) malloc (SEQUENCELEN); //used to temporary store a sequence number
@@ -274,17 +298,70 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     int lastMsgSize = filelen - (lastSeqN - initAck)*dataSize;
     printf("lastSEQN = %i\n", lastSeqN);
 
+    fprintf(blockLog,"filelen=%ld,dataSize=%i,lastSN=%i,lastMsgSize=%i\n",filelen,dataSize, lastSeqN, lastMsgSize);
+
     //window = lastSeqN -initAck;
     //Send window first segments
     for (int i = 0; i < window; i++){
         //printf("\n#lastSent: %d\n\n",lastSent);
         //printf("i:%d,window %f\n",i,window);
         strAck[3] = '\0';
+        starts_in_block = i*dataSize/block_size;
+        end_in_block = (i+1)*dataSize/block_size;
+        if (block1_is == starts_in_block){
+            block_to_get = 1;
+        }else if (block2_is == starts_in_block){
+            block_to_get = 2;
+        }else{
+            if (block1_is > block2_is){
+                fread(block2,1,block_size,fich);
+                fwrite(block2,block_size,1,output);
+                block2_is += 2;
+                block_to_get = 2;
+            }else{
+                fread(block1,1,block_size,fich);
+                fwrite(block1,block_size,1,output);
+                block1_is += 2;
+                block_to_get = 1;            
+            }
+        }
+        all_in_block = (starts_in_block == end_in_block);
+        
         intToSeqN(initAck + i, currentSeqN);
-        strncat(strAck, currentSeqN, seqNsize);
+        //strncat(strAck, currentSeqN, seqNsize);
         msg[0] = '\0';
         strncat(msg, currentSeqN, seqNsize);
-        memcpy(msg + seqNsize, content + i*dataSize, dataSize);
+        if (block_to_get == 1){
+            memcpy(msg + seqNsize,block1 + (i*dataSize - starts_in_block*block_size), dataSize );
+            fprintf(blockLog,"writing %ith message from position %i\n",(int) initAck + i,i*dataSize -starts_in_block*block_size);
+        }else if (block_to_get == 2){
+            memcpy(msg + seqNsize,block2 + (i*dataSize - starts_in_block*block_size), dataSize );
+        }else{
+            printf("ERROR IN MEMCPY INIT\n");
+            return -1;
+        }
+
+        if (!all_in_block){
+            sizeToGet = dataSize - (block_size - (i*dataSize - starts_in_block*block_size));
+            if (block_to_get == 2){
+                if (block1_is != end_in_block){
+                    fread(block1,1,block_size,fich);
+                    fwrite(block1,block_size,1,output);
+                    block1_is += 2;
+                }
+                memcpy(msg + seqNsize + (dataSize - sizeToGet) ,block1, sizeToGet);
+            }else if (block_to_get == 1){
+                if (block2_is != end_in_block){
+                    fread(block2,1,block_size,fich);
+                    fwrite(block2,block_size,1,output);
+                    block2_is += 2;
+                }
+                memcpy(msg + seqNsize + (dataSize - sizeToGet),block2, sizeToGet );
+            }else{
+                printf("ERROR IN MEMCPY INIT\n");
+                return -1;
+            }
+        }
 
         if (i==0){
             gettimeofday(&fSent,NULL);
@@ -294,6 +371,25 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         while (sent < 0){
             sent = sendto(sock, (char*) msg, dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
         }
+        fprintf(blockLog, "last chars of msg=");
+        for (int l=0;l<10;l++){
+            fprintf(blockLog,"%c",msg[dataSize+seqNsize-1-9+l]);
+        }
+        fprintf(blockLog,", supposed to be=");
+        for (int l=0;l<10;l++){
+            fprintf(blockLog,"%c",content[(i+1)*dataSize-1-9+l]);
+        }
+        fprintf(blockLog,"\n");
+        fprintf(blockLog, "first chars of msg=");
+        for (int l=0;l<10;l++){
+            fprintf(blockLog,"%c",msg[l]);
+        }
+        fprintf(blockLog,", supposed to be=%s",currentSeqN);
+        for (int l=0;l<10-seqNsize;l++){
+            fprintf(blockLog,"%c",content[l+i*dataSize]);
+        }  
+        fprintf(blockLog,"\n");
+        fprintf(blockLog, "sib=%i, eib=%i, btg=%i, b1i=%i, b2i=%i, stg=%i, seg=%i (INIT)\n",starts_in_block,end_in_block,block_to_get,block1_is,block2_is, sizeToGet, initAck+i);
         lastSent += 1;
         printf("\nSEG_%i SENT from init\n",lastSent);
         gettimeofday(&temp_tv,NULL);
@@ -303,9 +399,13 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         //printf("SENT %i bytes | seqN = %i \n", sent, initAck+i);
     }
 
+    fprintf(blockLog, "in file=%c",content[1494]);
+    fprintf(blockLog, ", in block=%c\n",block1[1494]);
+
     int gotFirst = 0;
 
     while (lastTransmittedSeqN < lastSeqN){
+
     //while (transmitted < filelen){
         FD_ZERO(&set);
         FD_SET(sock, &set);
@@ -325,7 +425,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                 gotFirst = 1;
             }
 
-            //printf("\nACK_%i RCV \n",maybeAcked);
+            printf("\nACK_%i RCV \n",maybeAcked);
 
             if (strcmp(response, "ACK") == 0){
 
@@ -383,11 +483,63 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         msg[0] = '\0';
                         intToSeqN(lastSent+1, currentSeqN);
                         strncat(msg, currentSeqN, seqNsize);
+                        starts_in_block = ((lastSent + 1 - initAck)*dataSize)/block_size;
+                        if (lastSent + 1 == lastSeqN){
+                            end_in_block = (((lastSent + 1 - initAck)*dataSize) + lastMsgSize)/block_size;
+                        }else{
+                            end_in_block = ((lastSent + 2 - initAck)*dataSize)/block_size;
+                        }                        
+                        if (block1_is == starts_in_block){
+                            block_to_get = 1;
+                        }else if (block2_is == starts_in_block){
+                            block_to_get = 2;
+                        }else{
+                            if (block1_is > block2_is){
+                                fread(block2,1,block_size,fich);
+                                fwrite(block2,block_size,1,output);
+                                block2_is += 2;
+                                block_to_get = 2;
+                            }else{
+                                fread(block1,1,block_size,fich);
+                                fwrite(block1,block_size,1,output);
+                                block1_is += 2;
+                                block_to_get = 1;            
+                            }
+                        }
+                        all_in_block = (starts_in_block == end_in_block);
+                        
                             //if the message is shorter than dataSize
                         if( lastSent +1 < lastSeqN ){
-                            //printf("before copy\n");
-                            memcpy(msg + seqNsize, content + (lastSent + 1 - initAck)*dataSize, dataSize); //WARNING : if dataSize=cste
-                            //printf("after copy\n");
+                            if (block_to_get == 1){
+                                memcpy(msg + seqNsize,block1 + (((lastSent + 1 - initAck)*dataSize) - starts_in_block*block_size), dataSize );
+                            }else if (block_to_get == 2){
+                                memcpy(msg + seqNsize,block2 + (((lastSent + 1 - initAck)*dataSize) - starts_in_block*block_size), dataSize );
+                            }else{
+                                printf("ERROR IN MEMCPY FROM SUPERIOR (<lastSeq) \n");
+                                return -1;
+                            }
+                    
+                            if (!all_in_block){
+                                sizeToGet = dataSize - (block_size - (((lastSent + 1 - initAck)*dataSize) - starts_in_block*block_size));
+                                if (block_to_get == 2){
+                                    if (block1_is != end_in_block){
+                                        fread(block1,1,block_size,fich);
+                                        fwrite(block1,block_size,1,output);
+                                        block1_is += 2;
+                                    }
+                                    memcpy(msg + seqNsize + (dataSize - sizeToGet) ,block1, sizeToGet);
+                                }else if (block_to_get == 1){
+                                    if (block2_is != end_in_block){
+                                        fread(block2,1,block_size,fich);
+                                        fwrite(block2,block_size,1,output);
+                                        block2_is += 2;
+                                    }
+                                    memcpy(msg + seqNsize + (dataSize - sizeToGet),block2, sizeToGet );
+                                }else{
+                                    printf("ERROR IN MEMCPY FROM SUPERIOR (<lastSeq)\n");
+                                    return -1;
+                                }
+                            }
                             sent = sendto(sock, (char*) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                             while (sent < 0){
                                 sent = sendto(sock, (char*) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
@@ -395,11 +547,36 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
                             printf("SEG_%i SENT from normal\n",lastSent+1);
                         }else{
-                            //printf("before copy lastMSg\n");
-                            //printf("msgSize = %li, dataSize = %i\n", filelen - (lastSent + 1 - initAck)*dataSize, dataSize);
-                            //printf("lastMsgSize = %i\n", lastMsgSize);
-                            memcpy(msg + seqNsize, content + (lastSent + 1 - initAck)*dataSize, lastMsgSize); //WARNING : if dataSize=cste
-                            //printf("after copy lastMsg\n");
+                            if (block_to_get == 1){
+                                memcpy(msg + seqNsize,block1 + (((lastSent + 1 - initAck)*dataSize) - starts_in_block*block_size), lastMsgSize );
+                            }else if (block_to_get == 2){
+                                memcpy(msg + seqNsize,block2 + (((lastSent + 1 - initAck)*dataSize) - starts_in_block*block_size), lastMsgSize );
+                            }else{
+                                printf("ERROR IN MEMCPY INIT\n");
+                                return -1;
+                            }
+
+                            if (!all_in_block){
+                                sizeToGet = lastMsgSize - (block_size - (((lastSent + 1 - initAck)*dataSize) - starts_in_block*block_size));
+                                if (block_to_get == 2){
+                                    if (block1_is != end_in_block){
+                                        fread(block1,1,block_size,fich);
+                                        fwrite(block1,block_size,1,output);
+                                        block1_is += 2;
+                                    }
+                                    memcpy(msg + seqNsize + (lastMsgSize - sizeToGet) ,block1, sizeToGet);
+                                }else if (block_to_get == 1){
+                                    if (block2_is != end_in_block){
+                                        fread(block2,1,block_size,fich);
+                                        fwrite(block2,block_size,1,output);
+                                        block2_is += 2;
+                                    }
+                                    memcpy(msg + seqNsize + (lastMsgSize - sizeToGet),block2, sizeToGet );
+                                }else{
+                                    printf("ERROR IN MEMCPY FROM SUPERIOR (=lastSeq)\n");
+                                    return -1;
+                                }
+                            }
                             sent = sendto(sock, (char*) msg,  lastMsgSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                             while (sent < 0){
                                 sent = sendto(sock, (char*) msg,  lastMsgSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
@@ -408,8 +585,9 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             //printf("SEG_%i SENT \n",lastSent+1);
                             //printf("message :\n %s \n-------------------\n",msg);
                         }
-                        
 
+                        fprintf(blockLog, "sib=%i, eib=%i, btg=%i, b1i=%i, b2i=%i, stg=%i, seg=%i (SUP)\n",starts_in_block,end_in_block,block_to_get,block1_is,block2_is, sizeToGet, lastSent+1);
+                        
                         //gettimeofday(&begin,NULL);
                         if (sent > -1){
                             flightSize ++;
@@ -435,18 +613,102 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         msg[0] = '\0';
                         intToSeqN(lastTransmittedSeqN + 1, currentSeqN);
                         strncat(msg, currentSeqN, seqNsize);
+                        starts_in_block = ((lastTransmittedSeqN + 1 - initAck)*dataSize)/block_size;
+                        if (lastTransmittedSeqN + 1 == lastSeqN){
+                            end_in_block = (((lastTransmittedSeqN + 1 - initAck)*dataSize) + lastMsgSize)/block_size;
+                        }else{
+                            end_in_block = ((lastTransmittedSeqN + 2 - initAck)*dataSize)/block_size;
+                        }                        
+                        if (block1_is == starts_in_block){
+                            block_to_get = 1;
+                        }else if (block2_is == starts_in_block){
+                            block_to_get = 2;
+                        }else{
+                            if (block1_is > block2_is){
+                                fread(block2,1,block_size,fich);
+                                fwrite(block2,block_size,1,output);
+                                block2_is += 2;
+                                block_to_get = 2;
+                            }else{
+                                fread(block1,1,block_size,fich);
+                                fwrite(block1,block_size,1,output);
+                                block1_is += 2;
+                                block_to_get = 1;            
+                            }
+                        }
+                        all_in_block = (starts_in_block == end_in_block);
 
                             //if the message is shorter than dataSize
                         if(lastTransmittedSeqN < lastSeqN - 1){
-                            memcpy(msg + seqNsize, content + (lastTransmittedSeqN - initAck + 1)*dataSize, dataSize); //WARNING : if dataSize=cste
+                            if (block_to_get == 1){
+                                memcpy(msg + seqNsize,block1 + (((lastTransmittedSeqN + 1 - initAck)*dataSize) - starts_in_block*block_size), dataSize );
+                            }else if (block_to_get == 2){
+                                memcpy(msg + seqNsize,block2 + (((lastTransmittedSeqN + 1 - initAck)*dataSize) - starts_in_block*block_size), dataSize );
+                            }else{
+                                printf("ERROR IN MEMCPY FROM DUP (<lastSeq) \n");
+                                return -1;
+                            }
+                    
+                            if (!all_in_block){
+                                sizeToGet = dataSize - (block_size - (((lastTransmittedSeqN + 1 - initAck)*dataSize) - starts_in_block*block_size));
+                                if (block_to_get == 2){
+                                    if (block1_is != end_in_block){
+                                        fread(block1,1,block_size,fich);
+                                        fwrite(block1,block_size,1,output);
+                                        block1_is += 2;
+                                    }
+                                    memcpy(msg + seqNsize + (dataSize - sizeToGet) ,block1, sizeToGet);
+                                }else if (block_to_get == 1){
+                                    if (block2_is != end_in_block){
+                                        fread(block2,1,block_size,fich);
+                                        fwrite(block2,block_size,1,output);
+                                        block2_is += 2;
+                                    }
+                                    memcpy(msg + seqNsize + (dataSize - sizeToGet),block2, sizeToGet );
+                                }else{
+                                    printf("ERROR IN MEMCPY FROM DUP (<lastSeq)\n");
+                                    return -1;
+                                }
+                            }
                             sent = sendto(sock, (char*) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                             printf("SEG_%i SENT from dupack\n",lastTransmittedSeqN+1);
                         }else{
-                            memcpy(msg + seqNsize, content + (lastTransmittedSeqN - initAck + 1)*dataSize, lastMsgSize); //avant on avait mis lastDUpAck ici 
+
+                            if (block_to_get == 1){
+                                memcpy(msg + seqNsize,block1 + (((lastTransmittedSeqN + 1 - initAck)*dataSize) - starts_in_block*block_size), lastMsgSize );
+                            }else if (block_to_get == 2){
+                                memcpy(msg + seqNsize,block2 + (((lastTransmittedSeqN + 1 - initAck)*dataSize) - starts_in_block*block_size), lastMsgSize );
+                            }else{
+                                printf("ERROR IN MEMCPY DUP\n");
+                                return -1;
+                            }
+
+                            if (!all_in_block){
+                                sizeToGet = lastMsgSize - (block_size - (((lastTransmittedSeqN + 1 - initAck)*dataSize) - starts_in_block*block_size));
+                                if (block_to_get == 2){
+                                    if (block1_is != end_in_block){
+                                        fread(block1,1,block_size,fich);
+                                        fwrite(block1,block_size,1,output);
+                                        block1_is += 2;
+                                    }
+                                    memcpy(msg + seqNsize + (lastMsgSize - sizeToGet) ,block1, sizeToGet);
+                                }else if (block_to_get == 1){
+                                    if (block2_is != end_in_block){
+                                        fread(block2,1,block_size,fich);
+                                        fwrite(block2,block_size,1,output);
+                                        block2_is += 2;
+                                    }
+                                    memcpy(msg + seqNsize + (lastMsgSize - sizeToGet),block2, sizeToGet );
+                                }else{
+                                    printf("ERROR IN MEMCPY FROM DUP (=lastSeq)\n");
+                                    return -1;
+                                }
+                            }
                             sent = sendto(sock, (char*) msg,  lastMsgSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                             //printf("SEG_%i SENT \n",lastTransmittedSeqN+1);
                             //printf("message :\n %s \n-------------------\n",msg);
                         }
+                        fprintf(blockLog, "sib=%i, eib=%i, btg=%i, b1i=%i, b2i=%i, stg=%i, seg=%i (DUP)\n",starts_in_block,end_in_block,block_to_get,block1_is,block2_is, sizeToGet, lastTransmittedSeqN+1);
 
                         //WARNING FOR LATER : handle last message that can be shorter
                         //gettimeofday(&begin,NULL);
@@ -472,18 +734,101 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             msg[0] = '\0';
                             intToSeqN(lastSent + 1, currentSeqN);
                             strncat(msg, currentSeqN, seqNsize);
-
-                                //if the message is shorter than dataSize
+                            starts_in_block = ((lastSent + 1 - initAck)*dataSize)/block_size;
+                            if (lastSent + 1 == lastSeqN){
+                                end_in_block = (((lastSent + 1 - initAck)*dataSize) + lastMsgSize)/block_size;
+                            }else{
+                                end_in_block = ((lastSent + 2 - initAck)*dataSize)/block_size;
+                            }                            
+                            if (block1_is == starts_in_block){
+                                block_to_get = 1;
+                            }else if (block2_is == starts_in_block){
+                                block_to_get = 2;
+                            }else{
+                                if (block1_is > block2_is){
+                                    fread(block2,1,block_size,fich);
+                                    fwrite(block2,block_size,1,output);
+                                    block2_is += 2;
+                                    block_to_get = 2;
+                                }else{
+                                    fread(block1,1,block_size,fich);
+                                    fwrite(block1,block_size,1,output);
+                                    block1_is += 2;
+                                    block_to_get = 1;            
+                                }
+                            }
+                            all_in_block = (starts_in_block == end_in_block);
                         if( lastSent +1 < lastSeqN ){
+                            if (block_to_get == 1){
+                                memcpy(msg + seqNsize,block1 + (((lastSent + 1 - initAck)*dataSize) - starts_in_block*block_size), dataSize );
+                            }else if (block_to_get == 2){
+                                memcpy(msg + seqNsize,block2 + (((lastSent + 1 - initAck)*dataSize) - starts_in_block*block_size), dataSize );
+                            }else{
+                                printf("ERROR IN MEMCPY FROM <DUP (<lastSeq) \n");
+                                return -1;
+                            }
+                    
+                            if (!all_in_block){
+                                sizeToGet = dataSize - (block_size - (((lastSent + 1 - initAck)*dataSize) - starts_in_block*block_size));
+                                if (block_to_get == 2){
+                                    if (block1_is != end_in_block){
+                                        fread(block1,1,block_size,fich);
+                                        fwrite(block1,block_size,1,output);
+                                        block1_is += 2;
+                                    }
+                                    memcpy(msg + seqNsize + (dataSize - sizeToGet) ,block1, sizeToGet);
+                                }else if (block_to_get == 1){
+                                    if (block2_is != end_in_block){
+                                        fread(block2,1,block_size,fich);
+                                        fwrite(block2,block_size,1,output);
+                                        block2_is += 2;
+                                    }
+                                    memcpy(msg + seqNsize + (dataSize - sizeToGet),block2, sizeToGet );
+                                }else{
+                                    printf("ERROR IN MEMCPY FROM <DUP (<lastSeq)\n");
+                                    return -1;
+                                }
+                            }
                             //printf("before copy\n");
-                            memcpy(msg + seqNsize, content + (lastSent + 1 - initAck)*dataSize, dataSize); //WARNING : if dataSize=cste
                             //printf("after copy\n");
                             sent = sendto(sock, (char*) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                             printf("SEG_%i SENT from <dupack\n",lastSent + 1);
                        }else{
-                            memcpy(msg + seqNsize, content + (lastSent + 1 - initAck)*dataSize, lastMsgSize/10); //WARNING : if dataSize=cste
+
+                           if (block_to_get == 1){
+                                memcpy(msg + seqNsize,block1 + (((lastSent + 1 - initAck)*dataSize) - starts_in_block*block_size), lastMsgSize );
+                            }else if (block_to_get == 2){
+                                memcpy(msg + seqNsize,block2 + (((lastSent + 1 - initAck)*dataSize) - starts_in_block*block_size), lastMsgSize );
+                            }else{
+                                printf("ERROR IN MEMCPY FROM <DUPACK\n");
+                                return -1;
+                            }
+
+                            if (!all_in_block){
+                                sizeToGet = lastMsgSize - (block_size - (((lastSent + 1 - initAck)*dataSize) - starts_in_block*block_size));
+                                if (block_to_get == 2){
+                                    if (block1_is != end_in_block){
+                                        fread(block1,1,block_size,fich);
+                                        fwrite(block1,block_size,1,output);
+                                        block1_is += 2;
+                                    }
+                                    memcpy(msg + seqNsize + (lastMsgSize - sizeToGet) ,block1, sizeToGet);
+                                }else if (block_to_get == 1){
+                                    if (block2_is != end_in_block){
+                                        fread(block2,1,block_size,fich);
+                                        fwrite(block2,block_size,1,output);
+                                        block2_is += 2;
+                                    }
+                                    memcpy(msg + seqNsize + (lastMsgSize - sizeToGet),block2, sizeToGet );
+                                }else{
+                                    printf("ERROR IN MEMCPY FROM <DUPACK (=lastSeq)\n");
+                                    return -1;
+                                }
+                            }
+
                             sent = sendto(sock, (char*) msg,  lastMsgSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
                         }
+                        fprintf(blockLog, "sib=%i, eib=%i, btg=%i, b1i=%i, b2i=%i, stg=%i, seg=%i (<DUP)\n",starts_in_block,end_in_block,block_to_get,block1_is,block2_is, sizeToGet, lastSent+1);
 
                             if (sent > -1){
                                 flightSize ++;
@@ -508,22 +853,104 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
             intToSeqN(lastTransmittedSeqN + 1, currentSeqN);
             strncat(msg, currentSeqN, seqNsize);
-            
+            starts_in_block = ((lastTransmittedSeqN + 1 - initAck)*dataSize)/block_size;
+            if (lastTransmittedSeqN + 1 == lastSeqN){
+                end_in_block = (((lastTransmittedSeqN + 1 - initAck)*dataSize) + lastMsgSize)/block_size;
+            }else{
+                end_in_block = ((lastTransmittedSeqN + 2 - initAck)*dataSize)/block_size;
+            }
+            if (block1_is == starts_in_block){
+                block_to_get = 1;
+            }else if (block2_is == starts_in_block){
+                block_to_get = 2;
+            }else{
+                if (block1_is > block2_is){
+                    fread(block2,1,block_size,fich);
+                    fwrite(block2,block_size,1,output);
+                    block2_is += 2;
+                    block_to_get = 2;
+                }else{
+                    fread(block1,1,block_size,fich);
+                    fwrite(block1,block_size,1,output);
+                    block1_is += 2;
+                    block_to_get = 1;            
+                }
+            }
+            all_in_block = (starts_in_block == end_in_block);
             int alreadyRT = getRetransmitted(&retransmitted,lastTransmittedSeqN+1);
 
             if(lastTransmittedSeqN >= lastSeqN - 1){
-                memcpy(msg + seqNsize, content + (lastTransmittedSeqN - initAck + 1)*dataSize, lastMsgSize); //WARNING : if dataSize=cste
+                if (block_to_get == 1){
+                    memcpy(msg + seqNsize,block1 + (((lastTransmittedSeqN + 1 - initAck)*dataSize) - starts_in_block*block_size), lastMsgSize );
+                }else if (block_to_get == 2){
+                    memcpy(msg + seqNsize,block2 + (((lastTransmittedSeqN + 1 - initAck)*dataSize) - starts_in_block*block_size), lastMsgSize );
+                }else{
+                    printf("ERROR IN MEMCPY FROM DUP (<lastSeq) \n");
+                    return -1;
+                }
+        
+                if (!all_in_block){
+                    sizeToGet = lastMsgSize - (block_size - (((lastTransmittedSeqN + 1 - initAck)*dataSize) - starts_in_block*block_size));
+                    if (block_to_get == 2){
+                        if (block1_is != end_in_block){
+                            fread(block1,1,block_size,fich);
+                            fwrite(block1,block_size,1,output);
+                            block1_is += 2;
+                        }
+                        memcpy(msg + seqNsize + (lastMsgSize - sizeToGet) ,block1, sizeToGet);
+                    }else if (block_to_get == 1){
+                        if (block2_is != end_in_block){
+                            fread(block2,1,block_size,fich);
+                            fwrite(block2,block_size,1,output);
+                            block2_is += 2;
+                        }
+                        memcpy(msg + seqNsize + (lastMsgSize - sizeToGet),block2, sizeToGet );
+                    }else{
+                        printf("ERROR IN MEMCPY FROM DUP (<lastSeq)\n");
+                        return -1;
+                    }
+                }
                 sent = sendto(sock, (char *) msg,  lastMsgSize + seqNsize, MSG_CONFIRM, (struct sockaddr *)&client, clientLen);
                 //printf("SEG_%i SENT from timeout\n",lastTransmittedSeqN+1);
                 //printf("message :\n %s \n-------------------\n",msg);
             }else{
+
+                if (block_to_get == 1){
+                    memcpy(msg + seqNsize,block1 + (((lastTransmittedSeqN + 1 - initAck)*dataSize) - starts_in_block*block_size), dataSize );
+                }else if (block_to_get == 2){
+                    memcpy(msg + seqNsize,block2 + (((lastTransmittedSeqN + 1 - initAck)*dataSize) - starts_in_block*block_size), dataSize );
+                }else{
+                    printf("ERROR IN MEMCPY DUP\n");
+                    return -1;
+                }
+
+                if (!all_in_block){
+                    sizeToGet = dataSize - (block_size - (((lastTransmittedSeqN + 1 - initAck)*dataSize) - starts_in_block*block_size));
+                    if (block_to_get == 2){
+                        if (block1_is != end_in_block){
+                            fread(block1,1,block_size,fich);
+                            fwrite(block1,block_size,1,output);
+                            block1_is += 2;
+                        }
+                        memcpy(msg + seqNsize + (dataSize - sizeToGet) ,block1, sizeToGet);
+                    }else if (block_to_get == 1){
+                        if (block2_is != end_in_block){
+                            fread(block2,1,block_size,fich);
+                            fwrite(block2,block_size,1,output);
+                            block2_is += 2;
+                        }
+                        memcpy(msg + seqNsize + (dataSize - sizeToGet),block2, sizeToGet );
+                    }else{
+                        printf("ERROR IN MEMCPY FROM DUP (=lastSeq)\n");
+                        return -1;
+                    }
+                }
                 //printf("about to send from timeout, lastTransmitted = %i\n", lastTransmittedSeqN+1);
-                memcpy(msg + seqNsize, content + (lastTransmittedSeqN - initAck + 1)*dataSize, dataSize); //WARNING : if dataSize=cste
                 //printf("copied msg\n");
                 sent = sendto(sock, (char *) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr *)&client, clientLen);
                 printf("SEG_%i SENT from timeout with rtt = %lds and %ldus\n",lastTransmittedSeqN+1, srtt_sec,srtt_usec);
             }
-
+            fprintf(blockLog, "sib=%i, eib=%i, btg=%i, b1i=%i, b2i=%i, stg=%i, seg=%i (TO)\n",starts_in_block,end_in_block,block_to_get,block1_is,block2_is, sizeToGet, lastTransmittedSeqN+1);
             if (sent > -1){
                 incrListeBis(&retransmitted, lastTransmittedSeqN+1);
             }
@@ -570,6 +997,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     printf("timeouts = %i\n", wentToTO);//DEL
     fclose(rttLog);//DEL
     fclose(windowLog);//DEL
+    fclose(fich);
+    fclose(blockLog);
     /*sleep(1);
     printf("About to read file\n");
     FILE* recept = fopen("copy_rfc793.pdf", "r");
