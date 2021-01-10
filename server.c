@@ -24,8 +24,10 @@ int main (int argc, char *argv[]) {
   // ------------------------------------- CONFIG ----------------------------------------
   int port1= 2567;
   int port2 = 2568;
+  int my_window;
   if (argc > 1){
-	port1 = atoi(argv[1]);	
+	port1 = atoi(argv[1]);
+	my_window = atoi(argv[2]);	
 	printf("Port = %i, %i\n",port1, port2);
   }
 
@@ -102,7 +104,7 @@ while (1) {
 		int msgSize;
 	  	msgSize = recvfrom(msgSock, buffer, RCVSIZE, MSG_WAITALL, (struct sockaddr*)&client, &clientLen);
 	  	buffer[msgSize]='\0';
-		readAndSendFile(msgSock, client, buffer, fragSize - SEQUENCELEN, SEQUENCELEN, 1); //current ack must be shared between son processes
+		readAndSendFile(msgSock, client, buffer, fragSize - SEQUENCELEN, SEQUENCELEN, 1,my_window); //current ack must be shared between son processes
 
 		/*
 		printf("FMsg received , size received : %s, %i\n",buffer, msgSize);

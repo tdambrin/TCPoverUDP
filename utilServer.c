@@ -102,7 +102,7 @@ int seqNToInt(char *seqNumber){
 }
 
 //current message format : XXXX<data> with XXXX sequence number
-int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dataSize, int seqNsize, int initAck){
+int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dataSize, int seqNsize, int initAck, int my_window){
                         //WARNING FOR LATER : handle sending of more content than existing
 
     FILE* log = fopen("log.txt", "w");
@@ -111,7 +111,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     // ---------------------- INIT ---------------------
     char* content;
     //float window = 1; //with slow start the window starts to 1...
-    float sstresh = 100; //...and the tresholt takes a first arbitrary great value at the beginning
+    float sstresh = 8; //...and the tresholt takes a first arbitrary great value at the beginning
     char* msg = (char*) malloc(dataSize + seqNsize);
     char* response = (char*) malloc(seqNsize+3);
     char strAck[] = "ACK";
@@ -141,7 +141,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
     //--------------------------- SEND FILE CONTENT TO CLIENT -----------------
     int lastSeqN = filelen/dataSize + initAck ;
-    float window = 5;
+    float min_window = my_window;
+    float window = min_window;
     int sent = -1;
     int transmitted = 0; //nb of bytes sent and acked
     int lastSent = initAck - 1; //seqN of last sent segment
@@ -165,6 +166,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     int timeout_nb = 0;
     int dupack_nb = 0;
     int ignored_nb = 0;
+    int srtt_raw = 5000;
     
     //Send window first segment
         printf("\n#lastSent: %d\n\n",lastSent);
@@ -197,8 +199,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         //Put an arbitrary value (close to the real one) when we don't have compute yet the real one
         if (firstTime){
             timeout.tv_sec = 0;
-            timeout.tv_usec = 5000;
-            srtt_usec = 5000;
+            timeout.tv_usec = srtt_raw;
+            srtt_usec = srtt_raw;
         }
 
         printf("window = %f | flightsize : %f | sstresh = %f \n\n",window,flightSize,sstresh);
@@ -219,6 +221,9 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 	            long rtt_usec = (rtt_sec*1000000 + stop.tv_usec - begin.tv_usec);
                 srtt_usec = ALPHA*srtt_usec + (1-ALPHA)*rtt_usec;
                 firstTime = 0;
+                if(srtt_usec > 2*srtt_raw){
+                    srtt_usec = srtt_raw;
+                }
                 timeout.tv_sec = 0;
                 timeout.tv_usec = srtt_usec;
             }
@@ -238,8 +243,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                       lastTransmittedSeqN = maybeAcked;
                       dupAck = 0; // /!\check
 
-                      //******congestion avoidance
-                     // window += 1/floor(window);window += 1/floor(window);
+                      //******congestion avoidance ou slowstart
+                     //window = window < sstresh ? window*2 : window + 1;
                     //*********
 
                       //transmit next segments (from lastSent not lastTransmitted)
@@ -302,7 +307,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         }
                         
                         sstresh = ceilf(flightSize/2);
-                        //window = sstresh + dupAck;
+                        window = min_window;
                         dupAck = 0;
                     
                     } // not yet considered as a lost segment -> keep sending
@@ -335,8 +340,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                 }else{
                     printf("Received an inferior ack -> ignored \n");
                     ignored_nb ++;
-                    //******congestion avoidance
-                     // window += 1/floor(window);
+                    //******congestion avoidance ou slowstart
+                     //window = window < sstresh ? window*2 : window + 1;
                     //*********
                     
                 }
@@ -367,8 +372,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             
             timeout.tv_sec = 0;
             timeout.tv_usec = srtt_usec*1.3;
-           // window = 4;
-            sstresh = ceilf(flightSize/2);
+            //window = min_window;
+            //sstresh = ceilf(flightSize/2);
             printf("\n SRTT : \n %ld sec.\n %ld usec.\n\n",srtt_sec,srtt_usec);
         }
     }
