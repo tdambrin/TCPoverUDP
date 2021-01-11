@@ -35,7 +35,6 @@ int synchro(int sock, struct sockaddr_in client, int port){
 	socklen_t clientLen = sizeof(client);
 	int recvdSize = recvfrom(sock, (char*) buffer, RCVSIZE, MSG_WAITALL, (struct sockaddr*)&client, &clientLen);
     buffer[recvdSize] = '\0';
-    printf("%s\n", buffer);
     if (strcmp(buffer, "SYN") == 0){ //SYN INITIATED BY CLIENT
 		int fork_res = fork();
 		if (fork_res == 0){ //son process
@@ -68,19 +67,15 @@ int synchro(int sock, struct sockaddr_in client, int port){
 			char synack_msg[8 + PORTLEN] = "SYN-ACK";
 			strcat(synack_msg, portstr);
 	        sendto(sock, (char*) synack_msg, strlen(synack_msg), MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
-			printf("SYNACK MESSAGE SENT : %s\n", synack_msg);
         	      	recvdSize = recvfrom(sock, (char*) buffer, RCVSIZE, MSG_WAITALL, (struct sockaddr*)&client, &clientLen);
               		buffer[recvdSize] = '\0';
 			if (strcmp(buffer, "ACK") == 0){	     
-			  	printf("SYNCHRONIZATION OK\n");
 			    	return 1;;
 		        }else{
-			  	printf("SYNCHRO STARTED BUT NOT FINISHED\n");
                   return -1;
 			}
 		}
 	}else{
-		printf("SYNCHRONIZATION  NOT GOOD\n");			
 		return -1;
 	}
 }
@@ -102,15 +97,10 @@ int seqNToInt(char *seqNumber){
 }
 
 //current message format : XXXX<data> with XXXX sequence number
-int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dataSize, int seqNsize, int initAck, int my_window){
-                        //WARNING FOR LATER : handle sending of more content than existing
-
-    FILE* log = fopen("log.txt", "w");
-    FILE* perf = fopen("perf.txt", "a");
+int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dataSize, int seqNsize, int initAck){
 
     // ---------------------- INIT ---------------------
     char* content;
-    //float window = 1; //with slow start the window starts to 1...
     float sstresh = 8; //...and the tresholt takes a first arbitrary great value at the beginning
     char* msg = (char*) malloc(dataSize + seqNsize);
     char* response = (char*) malloc(seqNsize+3);
@@ -118,7 +108,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     struct timeval timeout; //time after which we consider a segment lost
 
 
-        // --------------------- READ FILE ------------------
+    // --------------------- READ FILE ------------------
     int block_size = 50000000;
     FILE* fich = fopen(filename, "r");
     socklen_t clientLen = sizeof(client);
@@ -148,7 +138,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
 
     //--------------------------- SEND FILE CONTENT TO CLIENT -----------------
     int lastSeqN = filelen/dataSize + initAck ;
-    float min_window = my_window;
+    float min_window = 8;
     float window = min_window;
     int sent = -1;
     int transmitted = 0; //nb of bytes sent and acked
@@ -183,8 +173,11 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     
     //Send the first segment and measure the fix value of the RTT----------------------
 
+        //Find in which block the begining of the segment is
         starts_in_block = 0;
         end_in_block = dataSize/block_size;
+
+        //Find in which block we have to start to take data
         if (block1_is == starts_in_block){
             block_to_get = 1;
         }else if (block2_is == starts_in_block){
@@ -200,10 +193,10 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                 block_to_get = 1;            
             }
         }
+
+        //Is the segment we have to send in one block or in two blocks ?
         all_in_block = (starts_in_block == end_in_block);
 
-        printf("\n#lastSent: %d\n\n",lastSent);
-        printf("window %f\n",window);
         gettimeofday(&start,NULL);
         intToSeqN(initAck, currentSeqN);
         msg[0] = '\0';
@@ -221,13 +214,11 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
         sent = sendto(sock, (char*) msg, dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
         gettimeofday(&begin,NULL);
         lastSent += 1;
-        printf("\nSEG_%i SENT \n",lastSent);
         flightSize ++;
     //-------------------------------
 
 
     int lastMsgSize = filelen - (lastSeqN - initAck)*dataSize;
-    printf("lastSEQN = %i\n", lastSeqN);
     int firstTime = 1;
     
     //Send all the segments
@@ -243,8 +234,6 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             srtt_usec = srtt_raw;
         }
 
-        printf("window = %f | flightsize : %f | sstresh = %f \n\n",window,flightSize,sstresh);
-        fprintf(log,"window : %f | sstresh : %f | flightsize : %f | SRTT : %ldµs\n",window,sstresh, flightSize,srtt_usec);
         if( FD_ISSET(sock,&set) ){
 
             recvdSize = recvfrom(sock, (char*) response, RCVSIZE, MSG_WAITALL, (struct sockaddr*)&client, &clientLen);
@@ -253,23 +242,22 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
             maybeAcked = seqNToInt(response + 3);
             response[3] = '\0';
        
+            //Compute the SRTT
 	        if(firstTime){
                 gettimeofday(&stop,NULL);
-	            long srtt_sec = (stop.tv_sec - begin.tv_sec);
-	            long srtt_usec = (srtt_sec*1000000 + stop.tv_usec - begin.tv_usec);
+	            srtt_sec = (stop.tv_sec - begin.tv_sec);
+	            srtt_usec = (srtt_sec*1000000 + stop.tv_usec - begin.tv_usec)*0.5;
                 firstTime = 0;
 
                 //The RTT measured is inconsistent
-                if(srtt_usec > 2*srtt_raw){
+                if(srtt_usec > 2*srtt_raw || srtt_usec < srtt_raw*0.8){
                     srtt_usec = srtt_raw;
                 }
                 timeout.tv_sec = 0;
                 timeout.tv_usec = srtt_usec;
             }
-            
             //-------------------
 
-            printf("\nACK_%i RCV \n",maybeAcked);
 
             if (strcmp(response, "ACK") == 0){
                 if (flightSize > 0){
@@ -277,14 +265,14 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                     }
 
 
-                //Currently acked segment is the next one of the last acked segment
+    //CASE#1 : Currently acked segment is the next one of the last acked segment
                 if (maybeAcked > lastTransmittedSeqN){ 
-                      printf("normal ACK");
                       lastTransmittedSeqN = maybeAcked;
                       dupAck = 0; // /!\check
 
-                      //******congestion avoidance ou slowstart
+                    //******congestion avoidance ou slowstart
                      //window = window < sstresh ? window*2 : window + 1;
+                     //window = window > 15 ? 15 : window;
                     //*********
 
                       //transmit next segments (from lastSent not lastTransmitted)
@@ -293,12 +281,18 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         msg[0] = '\0';
                         intToSeqN(lastSent+1, currentSeqN);
                         strncat(msg, currentSeqN, seqNsize);
+
+                        //Find in which block the begining of the segment is
                         starts_in_block = ((lastSent + 1 - initAck)*dataSize)/block_size;
+                        
+                        //Find in which block the end of the segment is ...
                         if (lastSent + 1 == lastSeqN){
                             end_in_block = (((lastSent + 1 - initAck)*dataSize) + lastMsgSize)/block_size;
                         }else{
                             end_in_block = ((lastSent + 2 - initAck)*dataSize)/block_size;
-                        }                        
+                        }   
+
+                        //..and in which block we have to start to take data                     
                         if (block1_is == starts_in_block){
                             block_to_get = 1;
                         }else if (block2_is == starts_in_block){
@@ -314,8 +308,11 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                                 block_to_get = 1;            
                             }
                         }
+
+                        //Is the segment we have to send in one block or in two blocks ?
                         all_in_block = (starts_in_block == end_in_block);
-                            //if the message is shorter than dataSize
+                        
+                        //We send the last segment, the data is smaller
                         if( lastSent +1 < lastSeqN ){
                             if (block_to_get == 1){
                                 memcpy(msg + seqNsize,block1 + (((lastSent + 1 - initAck)*dataSize) - starts_in_block*block_size), dataSize );
@@ -325,7 +322,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                                 perror("ERROR IN MEMCPY FROM SUPERIOR (<lastSeq) \n");
                                 return -1;
                             }
-                    
+
+                            //The segment is on two different blocks
                             if (!all_in_block){
                                 sizeToGet = dataSize - (block_size - (((lastSent + 1 - initAck)*dataSize) - starts_in_block*block_size));
                                 if (block_to_get == 2){
@@ -346,8 +344,10 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                                 }
                             }                            
                             sent = sendto(sock, (char*) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
-                            printf("SEG_%i SENT \n",lastSent+1);
+
+                        //The segment which we want to send is not the last one
                         }else{
+                            //Where does the segment start ?
                             if (block_to_get == 1){
                                 memcpy(msg + seqNsize,block1 + (((lastSent + 1 - initAck)*dataSize) - starts_in_block*block_size), lastMsgSize );
                             }else if (block_to_get == 2){
@@ -356,7 +356,8 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                                 perror("ERROR IN MEMCPY SUPERIOR\n");
                                 return -1;
                             }
-
+                            
+                            //The segment is on two different blocks
                             if (!all_in_block){
                                 sizeToGet = lastMsgSize - (block_size - (((lastSent + 1 - initAck)*dataSize) - starts_in_block*block_size));
                                 if (block_to_get == 2){
@@ -377,7 +378,6 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                                 }
                             }                     
                             sent = sendto(sock, (char*) msg,  lastMsgSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
-                            printf("SEG_%i SENT \n",lastSent+1);
                         }
 
                         if (sent > -1){
@@ -387,16 +387,13 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         segSent++;
                     }
 
-                //Something went wrong with the transmission : the currently acked is not greater
+    //CASE#2 : Something went wrong with the transmission : the currently acked is not greater
                 }else if (lastTransmittedSeqN == maybeAcked) {  
-                    printf("dupack");
                     dupack_nb ++;
                     dupAck ++; //WARNING : not necessarly a dup ACK ? (if ack receiving order differs from ack sending order)
-                    printf("Received ACK_%d for the %d time\n",maybeAcked,dupAck);
 
                     //We received 3 times the same ACK, the segment is considered as lost [FastRetransmit]
                     if (dupAck >= 3){ 
-                        printf("At least 3 dupAcks\n");
                         lastDupAckRetr = maybeAcked;
                         msg[0] = '\0';
                         intToSeqN(lastTransmittedSeqN + 1, currentSeqN);
@@ -464,7 +461,6 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                                 }
                             }                            
                             sent = sendto(sock, (char*) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
-                            printf("SEG_%i SENT \n",lastTransmittedSeqN+1);
 
                         //The segment which we want to send is not the last one
                         }else{
@@ -499,7 +495,6 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                                 }
                             }                            
                             sent = sendto(sock, (char*) msg,  lastMsgSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
-                            printf("SEG_%i SENT \n",lastTransmittedSeqN+1);
                         }
 
                         if (sent > -1){
@@ -511,7 +506,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             }
                         }
                         
-                        sstresh = ceilf(flightSize/2);
+                        //sstresh = ceilf(flightSize/2);
                         window = min_window;
                         dupAck = 0;
                     
@@ -584,7 +579,6 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                                 }
                             }
                             sent = sendto(sock, (char*) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
-                            printf("SEG_%i SENT from <dupack\n",lastSent + 1);
                        
                        //The segment which we want to send is not the last one
                        }else{
@@ -594,7 +588,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                             }else if (block_to_get == 2){
                                 memcpy(msg + seqNsize,block2 + (((lastSent + 1 - initAck)*dataSize) - starts_in_block*block_size), lastMsgSize );
                             }else{
-                                printf("ERROR IN MEMCPY FROM <DUPACK\n");
+                                perror("ERROR IN MEMCPY FROM <DUPACK\n");
                                 return -1;
                             }
 
@@ -614,7 +608,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                                     }
                                     memcpy(msg + seqNsize + (lastMsgSize - sizeToGet),block2, sizeToGet );
                                 }else{
-                                    printf("ERROR IN MEMCPY FROM <DUPACK (=lastSeq)\n");
+                                    perror("ERROR IN MEMCPY FROM <DUPACK (=lastSeq)\n");
                                     return -1;
                                 }
                             }
@@ -631,20 +625,17 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         }
                     
                 }else{
-                    printf("Received an inferior ack -> ignored \n");
                     ignored_nb ++;
                     //******congestion avoidance ou slowstart
                      //window = window < sstresh ? window*2 : window + 1;
+                     //window = window > 15 ? 15 : window;
                     //*********
                     
                 }
-                printf("\n SRTT : \n %ld sec.\n %ld usec.\n\n",srtt_sec,srtt_usec);
                 
             }
-        //TIMEOUT : segment lost
+    //CASE#3 : TIMEOUT -> segment lost
         }else{
-            printf("\n#TIMEOUT\n");
-            fprintf(log,"#TIMEOUT\n");
             timeout_nb ++;
             msg[0] = '\0';
             intToSeqN(lastTransmittedSeqN + 1, currentSeqN);
@@ -684,7 +675,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                 }else if (block_to_get == 2){
                     memcpy(msg + seqNsize,block2 + (((lastTransmittedSeqN + 1 - initAck)*dataSize) - starts_in_block*block_size), lastMsgSize );
                 }else{
-                    printf("ERROR IN MEMCPY FROM DUP (<lastSeq) \n");
+                    perror("ERROR IN MEMCPY FROM DUP (<lastSeq) \n");
                     return -1;
                 }
         
@@ -704,7 +695,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         }
                         memcpy(msg + seqNsize + (lastMsgSize - sizeToGet),block2, sizeToGet );
                     }else{
-                        printf("ERROR IN MEMCPY FROM DUP (<lastSeq)\n");
+                        perror("ERROR IN MEMCPY FROM DUP (<lastSeq)\n");
                         return -1;
                     }
                 }
@@ -718,7 +709,7 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                 }else if (block_to_get == 2){
                     memcpy(msg + seqNsize,block2 + (((lastTransmittedSeqN + 1 - initAck)*dataSize) - starts_in_block*block_size), dataSize );
                 }else{
-                    printf("ERROR IN MEMCPY DUP\n");
+                    perror("ERROR IN MEMCPY DUP\n");
                     return -1;
                 }
 
@@ -738,27 +729,22 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
                         }
                         memcpy(msg + seqNsize + (dataSize - sizeToGet),block2, sizeToGet );
                     }else{
-                        printf("ERROR IN MEMCPY FROM DUP (=lastSeq)\n");
+                        perror("ERROR IN MEMCPY FROM DUP (=lastSeq)\n");
                         return -1;
                     }
                 }
                 
                 sent = sendto(sock, (char *) msg,  dataSize + seqNsize, MSG_CONFIRM, (struct sockaddr *)&client, clientLen);
-                printf("SEG_%i SENT from timeout with rtt = %lds and %ldus\n",lastTransmittedSeqN+1, srtt_sec,srtt_usec);
             }
             
             timeout.tv_sec = 0;
             timeout.tv_usec = srtt_usec*1.3;
-            //window = min_window;
+            window = min_window;
             //sstresh = ceilf(flightSize/2);
-            printf("\n SRTT : \n %ld sec.\n %ld usec.\n\n",srtt_sec,srtt_usec);
         }
     }
 
     //All bytes have been transmitted -> send END MSG
-
-    /*char endMsg[] = "END_";
-    strncat(endMsg, filename, strlen(filename));*/
     char endMsg[] = "FIN";
     sent = sendto(sock, (char*) endMsg, strlen(endMsg), MSG_CONFIRM, (struct sockaddr*)&client, clientLen);
     while( sent < 0){
@@ -766,36 +752,9 @@ int readAndSendFile(int sock, struct sockaddr_in client, char* filename, int dat
     }
 
     printf("FILE CONTENT FULLY TRANSMITTED, sent endMsg = %s\n", endMsg);
-    //free(content);
-
-
-
     gettimeofday(&end,NULL);
     long seconds = (end.tv_sec - start.tv_sec);
     long micros = (seconds*1000000 + end.tv_usec - start.tv_usec);
     printf("\n-------------------\nPROGRAM RAN IN :\n %ld s and %ld us \nwith window = %f\n throughput = %f MB/s\nNb timeout : %d\nNb dupAck : %d\nNb ignored: %d\n SRTT : %ld µs\n-------------------\n", seconds,micros,window,
     (filelen/ ( seconds+micros*(pow(10,-6)) ) )*pow(10,-6),timeout_nb, dupack_nb, ignored_nb,srtt_usec );
-    fprintf(perf,"\n-------------------\nPROGRAM RAN IN :\n %ld s and %ld us \nwith window = %f\n throughput = %f MB/s\nNb timeout : %d\nNb dupAck : %d\nNb ignored: %d\n SRTT : %ld µs\n-------------------\n", seconds,micros,window,
-    (filelen/ ( seconds+micros*(pow(10,-6)) ) )*pow(10,-6),timeout_nb, dupack_nb, ignored_nb,srtt_usec );
-
-    fclose(perf);
-    fclose(log);
-
-    //save time for comparison-----------------------------
-   /* FILE* times = fopen("times.txt", "a");
-    if (times){
-        fprintf(times, "%f\n", seconds);
-        fclose(times);
-    }*/
-
-    return 0;
-}
-
-//not used yet
-char **splitData(char* src, int fragSize){
-    char** res = (char**) malloc(sizeof(src));
-    for( int i=0; i < strlen(src)/fragSize + 1; i++){
-        strncpy(res[i], src + fragSize*i, fragSize);
-    }
-    return res;
 }
