@@ -23,10 +23,10 @@ int main (int argc, char *argv[]) {
 
   // ------------------------------------- CONFIG ----------------------------------------
   int port1= 2567;
-  int port2 = 2568;
+
   if (argc > 1){
 	port1 = atoi(argv[1]);
-	printf("Port = %i, %i\n",port1, port2);
+	printf("Port = %i\n",port1);
   }
 
   struct sockaddr_in client, adresse_udp;
