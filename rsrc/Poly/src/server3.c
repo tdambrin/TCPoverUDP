@@ -23,8 +23,10 @@ int main (int argc, char *argv[]) {
 
   // ------------------------------------- CONFIG ----------------------------------------
   int port1= 2567;
+  int port2 = 2568;
   if (argc > 1){
-	port1 = atoi(argv[1]);	
+	port1 = atoi(argv[1]);
+	printf("Port = %i, %i\n",port1, port2);
   }
 
   struct sockaddr_in client, adresse_udp;
@@ -61,23 +63,30 @@ int main (int argc, char *argv[]) {
 	  return -1;
   }
 
-// -------------------------------- ACCEPT CONNEXION AND HANDLE IF CHILD PROCESSES -------------------------------------
-int fragSize = SEQUENCELEN + 1494;
-int sync; 
-int newPort = port1 + 1;
-while (1) {
 
+// -------------------------------- ACCEPT CONNEXION AND HANDLE IF CHILD PROCESSES -------------------------------------
+int fragSize = 1500;
+int com_sockets[100]; // used to store clients' sockets descriptors
+int sync; 
+char* msgType = (char*) malloc(4); // on donnera pour l'instant les requetes sous la forme ABC_ ou ABC = {GET, ...}
+while (1) {
+	int newPort = port1 + 1;
   	sync = synchro(sock_co_udp, client, newPort);
-	if (sync > 1){ //successful synchro (returned data socket)
+	if (sync > 1){ //son process who created a new socket, meaning sync = descriptor of newly created socket
 		close(sock_co_udp);
 		int msgSock = sync;
+	  	com_sockets[newPort -1 - port1] = msgSock; // add to socket table
 		int msgSize;
 	  	msgSize = recvfrom(msgSock, buffer, RCVSIZE, MSG_WAITALL, (struct sockaddr*)&client, &clientLen);
 	  	buffer[msgSize]='\0';
-		readAndSendFile(msgSock, client, buffer, fragSize - SEQUENCELEN, SEQUENCELEN, 1);
+		readAndSendFile(msgSock, client, buffer, fragSize - SEQUENCELEN, SEQUENCELEN, 1); //current ack must be shared between son processes
 
 		close(msgSock);
 		break; //connexion closed
+
+	}else if (sync == 1){ // parent process -> keep accepting connexions
+		printf("ONE CLIENT SUCCESSFULLY SYNCHRO\n");
+	  	newPort ++;
 
 	}else{ // synchro failed
 	  	printf("COULD NOT SYNC ONE CLIENT\n");
@@ -85,6 +94,5 @@ while (1) {
 }
 	close(sock_co_udp);
 	return 0;
-
 
 }
